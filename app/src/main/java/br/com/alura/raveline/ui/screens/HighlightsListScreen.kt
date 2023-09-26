@@ -67,7 +67,7 @@ fun HighlightsListScreenPreview() {
         Surface {
             HighlightsListScreen(
                 productModels = sampleProductModels,
-                title = "Destaques do dia"
+                title = "Trending Day"
             )
         }
     }

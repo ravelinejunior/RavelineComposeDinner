@@ -17,14 +17,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import br.com.alura.raveline.routes.homeRoute
+import br.com.alura.raveline.routes.drinksRoute
+import br.com.alura.raveline.routes.highLightsRoute
 import br.com.alura.raveline.routes.menuRoute
 import br.com.alura.raveline.sampledata.bottomAppBarItems
 import br.com.alura.raveline.sampledata.sampleDrinks
 import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.sampledata.sampleWomen
 import br.com.alura.raveline.ui.components.BottomAppBarItem
-import br.com.alura.raveline.ui.components.PanucciBottomAppBar
+import br.com.alura.raveline.ui.components.RavelineBottomAppBar
 import br.com.alura.raveline.ui.screens.*
 import br.com.alura.raveline.ui.theme.RavelineTheme
 
@@ -47,22 +48,31 @@ class MainActivity : ComponentActivity() {
                         bottomAppBarItemSelected = selectedItem,
                         onBottomAppBarItemSelectedChange = {
                             selectedItem = it
+                            val route = it.route
+                            navController.navigate(route = route)
                         },
                         onFabClick = {
                         }) {
 
                         NavHost(
                             navController = navController,
-                            startDestination = homeRoute,
+                            startDestination = highLightsRoute,
                         ) {
-                            composable(homeRoute) {
+                            composable(highLightsRoute) {
                                 HighlightsListScreen(
-                                    productModels = sampleProducts
+                                    productModels = sampleProducts.sortedBy {
+                                        it.name
+                                    }
                                 )
                             }
                             composable(menuRoute) {
                                 MenuListScreen(
-                                    productModels = sampleProducts.shuffled() + sampleWomen.shuffled()
+                                    productModels = sampleProducts + sampleWomen.shuffled()
+                                )
+                            }
+                            composable(drinksRoute) {
+                                DrinksListScreen(
+                                    productModels = sampleWomen + sampleDrinks
                                 )
                             }
                         }
@@ -130,7 +140,7 @@ fun RavelineApp(
             )
         },
         bottomBar = {
-            PanucciBottomAppBar(
+            RavelineBottomAppBar(
                 item = bottomAppBarItemSelected,
                 items = bottomAppBarItems,
                 onItemChange = onBottomAppBarItemSelectedChange,

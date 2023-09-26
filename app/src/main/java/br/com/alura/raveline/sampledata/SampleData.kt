@@ -6,6 +6,10 @@ import androidx.compose.material.icons.filled.RestaurantMenu
 import androidx.compose.material.icons.outlined.LocalBar
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import br.com.alura.raveline.model.ProductModel
+import br.com.alura.raveline.routes.drinksRoute
+import br.com.alura.raveline.routes.highLightsRoute
+import br.com.alura.raveline.routes.homeRoute
+import br.com.alura.raveline.routes.menuRoute
 import br.com.alura.raveline.ui.components.BottomAppBarItem
 import java.math.BigDecimal
 import kotlin.random.Random
@@ -40,15 +44,18 @@ val sampleProductModels = List(10) { index ->
 val bottomAppBarItems = listOf(
     BottomAppBarItem(
         label = "Trends",
-        icon = Icons.Filled.AutoAwesome
+        icon = Icons.Filled.AutoAwesome,
+        route = highLightsRoute
     ),
     BottomAppBarItem(
         label = "Menu",
-        icon = Icons.Filled.RestaurantMenu
+        icon = Icons.Filled.RestaurantMenu,
+        route = menuRoute
     ),
     BottomAppBarItem(
         label = "Drinks",
-        icon = Icons.Outlined.LocalBar
+        icon = Icons.Outlined.LocalBar,
+        route = drinksRoute
     ),
 )
 

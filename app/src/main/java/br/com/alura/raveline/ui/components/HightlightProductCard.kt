@@ -47,7 +47,7 @@ fun HighlightProductCard(
 
     val bigImage =
         if (expanded) 360.dp
-        else 180.dp
+        else 200.dp
 
     val scaleType =
         if (expanded) ContentScale.Crop
@@ -65,7 +65,7 @@ fun HighlightProductCard(
                     contentDescription = null,
                     Modifier
                         .fillMaxWidth()
-                        .heightIn(bigImage)
+                        .height(bigImage)
                         .combinedClickable(
                             onLongClick = {
                                 expanded = !expanded

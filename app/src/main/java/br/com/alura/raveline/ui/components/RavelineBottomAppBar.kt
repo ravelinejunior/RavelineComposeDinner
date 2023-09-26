@@ -13,11 +13,12 @@ import br.com.alura.raveline.ui.theme.RavelineTheme
 
 class BottomAppBarItem(
     val label: String,
-    val icon: ImageVector
+    val icon: ImageVector,
+    val route: String,
 )
 
 @Composable
-fun PanucciBottomAppBar(
+fun RavelineBottomAppBar(
     item: BottomAppBarItem,
     modifier: Modifier = Modifier,
     items: List<BottomAppBarItem> = emptyList(),
@@ -41,9 +42,9 @@ fun PanucciBottomAppBar(
 
 @Preview
 @Composable
-fun PanucciBottomAppBarPreview() {
+fun RavelineBottomAppBarPreview() {
     RavelineTheme {
-        PanucciBottomAppBar(
+        RavelineBottomAppBar(
             item = bottomAppBarItems.first(),
             items = bottomAppBarItems
         )
