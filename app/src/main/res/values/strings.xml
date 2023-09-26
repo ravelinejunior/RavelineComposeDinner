@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Raveline</string>
+    <string name="trends">Trends</string>
+    <string name="order">Order</string>
+    <string name="products_details">ProductsDetails</string>
+    <string name="drinks_and_cocktails">Drinks</string>
+    <string name="menu">Menu</string>
+    <string name="order_s">Order</string>
+    <string name="payment">Payment</string>
+    <string name="confirm">Confirm</string>
+</resources>
