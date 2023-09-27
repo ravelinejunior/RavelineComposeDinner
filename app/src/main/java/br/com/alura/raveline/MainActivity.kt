@@ -35,6 +35,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
+            // See the change in navigation
+            LaunchedEffect(Unit) {
+                navController.addOnDestinationChangedListener { _, _, _ ->
+                    val routes = navController.backQueue.map {
+                        it.destination.route
+                    }
+                    Log.i("MainActivityTAG", "onCreate: back stack - $routes")
+                }
+            }
             RavelineTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -49,7 +58,10 @@ class MainActivity : ComponentActivity() {
                         onBottomAppBarItemSelectedChange = {
                             selectedItem = it
                             val route = it.route
-                            navController.navigate(route = route)
+                            navController.navigate(route = route) {
+                                launchSingleTop = true
+                                popUpTo(route)
+                            }
                         },
                         onFabClick = {
                         }) {
