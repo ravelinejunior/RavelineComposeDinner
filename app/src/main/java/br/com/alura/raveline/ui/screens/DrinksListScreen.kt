@@ -1,6 +1,7 @@
 package br.com.alura.raveline.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -26,6 +27,7 @@ fun DrinksListScreen(
     title: String = "Drinks And Cocktails",
     productModels: List<ProductModel> = emptyList(),
     columns: Int = 2,
+    onNavigateToDetails: () -> Unit = {}
 ) {
     Column(
         modifier
@@ -51,7 +53,10 @@ fun DrinksListScreen(
         ) {
             items(productModels) { p ->
                 DrinkProductCard(
-                    productModel = p
+                    productModel = p,
+                    modifier = Modifier.clickable {
+                        onNavigateToDetails()
+                    }
                 )
             }
         }

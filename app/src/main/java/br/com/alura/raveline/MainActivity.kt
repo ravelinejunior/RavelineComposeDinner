@@ -18,9 +18,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import br.com.alura.raveline.routes.checkoutRoute
 import br.com.alura.raveline.routes.drinksRoute
 import br.com.alura.raveline.routes.highLightsRoute
 import br.com.alura.raveline.routes.menuRoute
+import br.com.alura.raveline.routes.productDetailsRoute
 import br.com.alura.raveline.sampledata.bottomAppBarItems
 import br.com.alura.raveline.sampledata.sampleDrinks
 import br.com.alura.raveline.sampledata.sampleProducts
@@ -73,6 +75,8 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         onFabClick = {
+                            //Navigate to checkout
+                            navController.navigate(checkoutRoute)
                         }) {
 
                         NavHost(
@@ -83,17 +87,42 @@ class MainActivity : ComponentActivity() {
                                 HighlightsListScreen(
                                     productModels = sampleProducts.sortedBy {
                                         it.name
+                                    },
+                                    onNavigateProductClick = {
+                                        navController.navigate(productDetailsRoute)
+                                    },
+                                    onNavigateOrderClick = {
+                                        navController.navigate(checkoutRoute)
                                     }
                                 )
                             }
                             composable(menuRoute) {
                                 MenuListScreen(
-                                    productModels = sampleProducts + sampleWomen.shuffled()
+                                    productModels = sampleProducts + sampleWomen.shuffled(),
+                                    onNavigateToDetails = {
+                                        navController.navigate(productDetailsRoute)
+                                    }
                                 )
                             }
                             composable(drinksRoute) {
                                 DrinksListScreen(
-                                    productModels = sampleWomen + sampleDrinks
+                                    productModels = sampleWomen + sampleDrinks,
+                                    onNavigateToDetails = {
+                                        navController.navigate(productDetailsRoute)
+                                    }
+                                )
+                            }
+                            composable(productDetailsRoute) {
+                                ProductDetailsScreen(
+                                    productModel = sampleProducts.random(),
+                                    onNavigateToCheckout = {
+                                        navController.navigate(checkoutRoute)
+                                    }
+                                )
+                            }
+                            composable(checkoutRoute) {
+                                CheckoutScreen(
+                                    productModels = sampleWomen
                                 )
                             }
                         }
@@ -118,16 +147,17 @@ class MainActivity : ComponentActivity() {
         when (currentScreen) {
             getString(R.string.trends) -> HighlightsListScreen(
                 productModels = sampleProducts,
-                onOrderClick = {
+                onNavigateOrderClick = {
                     screens.add(getString(R.string.order))
                 },
-                onProductClick = {
+                onNavigateProductClick = {
                     screens.add(getString(R.string.products_details))
                 }
             )
 
             getString(R.string.menu) -> MenuListScreen(
-                productModels = sampleProducts
+                productModels = sampleProducts,
+                onNavigateToDetails = {}
             )
 
             getString(R.string.drinks_and_cocktails) -> DrinksListScreen(

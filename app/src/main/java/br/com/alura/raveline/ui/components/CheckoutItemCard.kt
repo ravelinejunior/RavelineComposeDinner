@@ -2,7 +2,17 @@ package br.com.alura.raveline.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -11,10 +21,16 @@ import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -24,7 +40,7 @@ import br.com.alura.raveline.R
 import br.com.alura.raveline.model.ProductModel
 import br.com.alura.raveline.sampledata.sampleProductWithImageModel
 import br.com.alura.raveline.sampledata.sampleProductWithoutImageModel
-import br.com.alura.raveline.ui.theme.CheckoutCircleButton
+import br.com.alura.raveline.ui.theme.Purple700
 import br.com.alura.raveline.ui.theme.RavelineTheme
 import coil.compose.AsyncImage
 
@@ -35,7 +51,7 @@ fun CheckoutItemCard(
 ) {
     Card(
         modifier
-            .height(120.dp),
+            .height(180.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Row(
@@ -53,7 +69,9 @@ fun CheckoutItemCard(
                     AsyncImage(
                         model = image,
                         contentDescription = null,
-                        Modifier.width(80.dp),
+                        Modifier
+                            .height(180.dp)
+                            .width(120.dp),
                         placeholder = painterResource(
                             id = R.drawable.placeholder
                         ),
@@ -64,6 +82,9 @@ fun CheckoutItemCard(
                     Modifier
                         .padding(16.dp)
                         .fillMaxWidth()
+                        .align(CenterVertically)
+                    ,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Text(
                         text = productModel.name,
@@ -85,9 +106,9 @@ fun CheckoutItemCard(
                     mutableStateOf(1)
                 }
                 val circleButtonModifier = Modifier
-                    .size(20.dp)
+                    .size(30.dp)
                     .background(
-                        CheckoutCircleButton,
+                        Purple700,
                         shape = CircleShape
                     )
                     .clip(CircleShape)
@@ -97,7 +118,9 @@ fun CheckoutItemCard(
                 ) {
                     Icon(
                         Icons.Filled.ArrowDropUp,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
                 Text(text = "$quantity")
@@ -111,7 +134,9 @@ fun CheckoutItemCard(
                 ) {
                     Icon(
                         Icons.Filled.ArrowDropDown,
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 }
             }
