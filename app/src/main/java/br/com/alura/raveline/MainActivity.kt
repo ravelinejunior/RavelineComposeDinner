@@ -30,6 +30,8 @@ import br.com.alura.raveline.ui.theme.RavelineTheme
 
 class MainActivity : ComponentActivity() {
 
+    private val TAG: String? = MainActivity::class.java.name
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -61,6 +63,20 @@ class MainActivity : ComponentActivity() {
                         mutableStateOf(item)
                     }
 
+                    //Verify if bottom app bar has items
+                    val containsInBottomAppBarItems = currentDestination?.let { navDestination ->
+                        bottomAppBarItems.find {
+                            it.destination.route == navDestination.route
+                        }
+                    } != null
+
+                    val isShowFab = when (currentDestination?.route) {
+                        AppDestination.MenuRoute.route,
+                        AppDestination.DrinksRoute.route -> true
+
+                        else -> false
+                    }
+
                     RavelineApp(
                         bottomAppBarItemSelected = selectedItem,
                         onBottomAppBarItemSelectedChange = {
@@ -73,7 +89,11 @@ class MainActivity : ComponentActivity() {
                         onFabClick = {
                             //Navigate to checkout
                             navController.navigate(AppDestination.CheckoutRoute.route)
-                        }) {
+                        },
+                        isShowBottomBar = containsInBottomAppBarItems,
+                        isShowTopBar = containsInBottomAppBarItems,
+                        isShowFab = isShowFab
+                    ) {
 
                         NavHost(
                             navController = navController,
@@ -84,8 +104,8 @@ class MainActivity : ComponentActivity() {
                                     productModels = sampleProducts.sortedBy {
                                         it.name
                                     },
-                                    onNavigateProductClick = {
-                                        navController.navigate(AppDestination.ProductDetailsRoute.route)
+                                    onNavigateProductClick = { product ->
+                                        navController.navigate("${AppDestination.ProductDetailsRoute.route}/${product.id}")
                                     },
                                     onNavigateOrderClick = {
                                         navController.navigate(AppDestination.CheckoutRoute.route)
@@ -95,22 +115,32 @@ class MainActivity : ComponentActivity() {
                             composable(AppDestination.MenuRoute.route) {
                                 MenuListScreen(
                                     productModels = sampleProducts + sampleWomen.shuffled(),
-                                    onNavigateToDetails = {
-                                        navController.navigate(AppDestination.ProductDetailsRoute.route)
+                                    onNavigateToDetails = { product ->
+                                        navController.navigate("${AppDestination.ProductDetailsRoute.route}/${product.id}")
                                     }
                                 )
                             }
                             composable(AppDestination.DrinksRoute.route) {
                                 DrinksListScreen(
                                     productModels = sampleWomen + sampleDrinks,
-                                    onNavigateToDetails = {
-                                        navController.navigate(AppDestination.ProductDetailsRoute.route)
+                                    onNavigateToDetails = { product ->
+                                        navController.navigate("${AppDestination.ProductDetailsRoute.route}/${product.id}")
                                     }
                                 )
                             }
-                            composable(AppDestination.ProductDetailsRoute.route) {
+                            composable("${AppDestination.ProductDetailsRoute.route}/{productId}") { backStackEntry ->
+
+                                val id = backStackEntry.arguments?.getString("productId")
+
+                                //Get selected product
+                                val selectedProduct = sampleProducts.firstOrNull { productModel ->
+                                    productModel.id == id
+                                }
+                                Log.i(TAG, "Product selected: $selectedProduct")
+
+
                                 ProductDetailsScreen(
-                                    productModel = sampleProducts.random(),
+                                    productModel = selectedProduct ?: sampleProducts.random(),
                                     onNavigateToCheckout = {
                                         navController.navigate(AppDestination.CheckoutRoute.route)
                                     }
@@ -176,31 +206,40 @@ fun RavelineApp(
     bottomAppBarItemSelected: BottomAppBarItem = bottomAppBarItems.first(),
     onBottomAppBarItemSelectedChange: (BottomAppBarItem) -> Unit = {},
     onFabClick: () -> Unit = {},
-    content: @Composable () -> Unit
+    isShowTopBar: Boolean = false,
+    isShowBottomBar: Boolean = false,
+    isShowFab: Boolean = false,
+    content: @Composable () -> Unit,
 ) {
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(text = "Ristorante Raveline")
-                },
-            )
+            if (isShowTopBar) {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(text = "Ristorante Raveline")
+                    },
+                )
+            }
         },
         bottomBar = {
-            RavelineBottomAppBar(
-                item = bottomAppBarItemSelected,
-                items = bottomAppBarItems,
-                onItemChange = onBottomAppBarItemSelectedChange,
-            )
+            if (isShowBottomBar) {
+                RavelineBottomAppBar(
+                    item = bottomAppBarItemSelected,
+                    items = bottomAppBarItems,
+                    onItemChange = onBottomAppBarItemSelectedChange,
+                )
+            }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onFabClick
-            ) {
-                Icon(
-                    Icons.Filled.PointOfSale,
-                    contentDescription = null
-                )
+            if (isShowFab) {
+                FloatingActionButton(
+                    onClick = onFabClick
+                ) {
+                    Icon(
+                        Icons.Filled.PointOfSale,
+                        contentDescription = null
+                    )
+                }
             }
         }
     ) {
