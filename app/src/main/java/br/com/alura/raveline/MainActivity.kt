@@ -18,12 +18,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import br.com.alura.raveline.routes.checkoutRoute
-import br.com.alura.raveline.routes.drinksRoute
-import br.com.alura.raveline.routes.highLightsRoute
-import br.com.alura.raveline.routes.menuRoute
-import br.com.alura.raveline.routes.productDetailsRoute
-import br.com.alura.raveline.sampledata.bottomAppBarItems
+import br.com.alura.raveline.navigation.AppDestination
+import br.com.alura.raveline.navigation.bottomAppBarItems
 import br.com.alura.raveline.sampledata.sampleDrinks
 import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.sampledata.sampleWomen
@@ -59,7 +55,7 @@ class MainActivity : ComponentActivity() {
                     val selectedItem by remember(currentDestination) {
                         val item = currentDestination?.let { destination ->
                             bottomAppBarItems.find {
-                                it.route == destination.route
+                                it.destination.route == destination.route
                             }
                         } ?: bottomAppBarItems.first()
                         mutableStateOf(item)
@@ -68,7 +64,7 @@ class MainActivity : ComponentActivity() {
                     RavelineApp(
                         bottomAppBarItemSelected = selectedItem,
                         onBottomAppBarItemSelectedChange = {
-                            val route = it.route
+                            val route = it.destination.route
                             navController.navigate(route = route) {
                                 launchSingleTop = true
                                 popUpTo(route)
@@ -76,51 +72,51 @@ class MainActivity : ComponentActivity() {
                         },
                         onFabClick = {
                             //Navigate to checkout
-                            navController.navigate(checkoutRoute)
+                            navController.navigate(AppDestination.CheckoutRoute.route)
                         }) {
 
                         NavHost(
                             navController = navController,
-                            startDestination = highLightsRoute,
+                            startDestination = AppDestination.TrendsHighlightRoute.route,
                         ) {
-                            composable(highLightsRoute) {
+                            composable(AppDestination.TrendsHighlightRoute.route) {
                                 HighlightsListScreen(
                                     productModels = sampleProducts.sortedBy {
                                         it.name
                                     },
                                     onNavigateProductClick = {
-                                        navController.navigate(productDetailsRoute)
+                                        navController.navigate(AppDestination.ProductDetailsRoute.route)
                                     },
                                     onNavigateOrderClick = {
-                                        navController.navigate(checkoutRoute)
+                                        navController.navigate(AppDestination.CheckoutRoute.route)
                                     }
                                 )
                             }
-                            composable(menuRoute) {
+                            composable(AppDestination.MenuRoute.route) {
                                 MenuListScreen(
                                     productModels = sampleProducts + sampleWomen.shuffled(),
                                     onNavigateToDetails = {
-                                        navController.navigate(productDetailsRoute)
+                                        navController.navigate(AppDestination.ProductDetailsRoute.route)
                                     }
                                 )
                             }
-                            composable(drinksRoute) {
+                            composable(AppDestination.DrinksRoute.route) {
                                 DrinksListScreen(
                                     productModels = sampleWomen + sampleDrinks,
                                     onNavigateToDetails = {
-                                        navController.navigate(productDetailsRoute)
+                                        navController.navigate(AppDestination.ProductDetailsRoute.route)
                                     }
                                 )
                             }
-                            composable(productDetailsRoute) {
+                            composable(AppDestination.ProductDetailsRoute.route) {
                                 ProductDetailsScreen(
                                     productModel = sampleProducts.random(),
                                     onNavigateToCheckout = {
-                                        navController.navigate(checkoutRoute)
+                                        navController.navigate(AppDestination.CheckoutRoute.route)
                                     }
                                 )
                             }
-                            composable(checkoutRoute) {
+                            composable(AppDestination.CheckoutRoute.route) {
                                 CheckoutScreen(
                                     productModels = sampleWomen
                                 )

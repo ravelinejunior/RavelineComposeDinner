@@ -8,13 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
-import br.com.alura.raveline.sampledata.bottomAppBarItems
+import br.com.alura.raveline.navigation.AppDestination
+import br.com.alura.raveline.navigation.bottomAppBarItems
 import br.com.alura.raveline.ui.theme.RavelineTheme
 
 class BottomAppBarItem(
     val label: String,
     val icon: ImageVector,
-    val route: String,
+    val destination: AppDestination,
 )
 
 @Composable
