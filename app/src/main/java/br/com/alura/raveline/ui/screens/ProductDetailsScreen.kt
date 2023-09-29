@@ -28,6 +28,7 @@ import br.com.alura.raveline.model.ProductModel
 import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.theme.RavelineTheme
 import coil.compose.AsyncImage
+import java.text.DecimalFormat
 
 @Composable
 fun ProductDetailsScreen(
@@ -57,8 +58,9 @@ fun ProductDetailsScreen(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            val decimalFormat = DecimalFormat("0.00")
+            Text("$${decimalFormat.format(productModel.price)}", fontSize = 18.sp)
             Text(productModel.name, fontSize = 24.sp)
-            Text(productModel.price.toPlainString(), fontSize = 18.sp)
             Text(productModel.description)
             Button(
                 onClick = {

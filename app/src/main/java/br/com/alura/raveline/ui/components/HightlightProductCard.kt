@@ -1,5 +1,6 @@
 package br.com.alura.raveline.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -7,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -33,6 +33,9 @@ import br.com.alura.raveline.sampledata.sampleProductWithImageModel
 import br.com.alura.raveline.sampledata.sampleProductWithoutImageModel
 import br.com.alura.raveline.ui.theme.RavelineTheme
 import coil.compose.AsyncImage
+import java.text.DecimalFormat
+
+val TAG: String = "HighlightProductCardTag"
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -41,6 +44,7 @@ fun HighlightProductCard(
     modifier: Modifier = Modifier,
     onOrderClick: () -> Unit = {}
 ) {
+
     var expanded by rememberSaveable {
         mutableStateOf(false)
     }
@@ -67,11 +71,18 @@ fun HighlightProductCard(
                         .fillMaxWidth()
                         .height(bigImage)
                         .combinedClickable(
+                            onClickLabel = "onOrderClick",
+                            onClick = {
+                                onOrderClick()
+                            },
                             onLongClick = {
                                 expanded = !expanded
                             },
                             onLongClickLabel = "Expand",
-                        ) {},
+                            onDoubleClick = {
+                                Log.i(TAG, "Double click on $productModel")
+                            }
+                        ),
                     placeholder = painterResource(id = R.drawable.placeholder),
                     contentScale = scaleType,
                 )
@@ -82,8 +93,9 @@ fun HighlightProductCard(
                     vertical = 8.dp
                 )
             ) {
+                val decimalFormat = DecimalFormat("0.00")
                 Text(text = productModel.name)
-                Text(text = productModel.price.toString())
+                Text(text = "$${decimalFormat.format(productModel.price)}")
                 Spacer(Modifier.height(16.dp))
                 Text(
                     text = productModel.description,

@@ -18,8 +18,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import br.com.alura.raveline.navigation.AppDestination
 import br.com.alura.raveline.navigation.bottomAppBarItems
+import br.com.alura.raveline.navigation.promoCodeParam
 import br.com.alura.raveline.sampledata.sampleDrinks
 import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.sampledata.sampleWomen
@@ -27,6 +29,7 @@ import br.com.alura.raveline.ui.components.BottomAppBarItem
 import br.com.alura.raveline.ui.components.RavelineBottomAppBar
 import br.com.alura.raveline.ui.screens.*
 import br.com.alura.raveline.ui.theme.RavelineTheme
+import java.math.BigDecimal
 
 class MainActivity : ComponentActivity() {
 
@@ -105,6 +108,7 @@ class MainActivity : ComponentActivity() {
                                         it.name
                                     },
                                     onNavigateProductClick = { product ->
+                                        val promoCode = "Fif"
                                         navController.navigate("${AppDestination.ProductDetailsRoute.route}/${product.id}")
                                     },
                                     onNavigateOrderClick = {
@@ -116,7 +120,8 @@ class MainActivity : ComponentActivity() {
                                 MenuListScreen(
                                     productModels = sampleProducts + sampleWomen.shuffled(),
                                     onNavigateToDetails = { product ->
-                                        navController.navigate("${AppDestination.ProductDetailsRoute.route}/${product.id}")
+                                        val promoCode = "Banana"
+                                        navController.navigate("${AppDestination.ProductDetailsRoute.route}/${product.id}?promoCode=$promoCode")
                                     }
                                 )
                             }
@@ -124,11 +129,17 @@ class MainActivity : ComponentActivity() {
                                 DrinksListScreen(
                                     productModels = sampleWomen + sampleDrinks,
                                     onNavigateToDetails = { product ->
-                                        navController.navigate("${AppDestination.ProductDetailsRoute.route}/${product.id}")
+                                        val promoCode = "Coit"
+                                        navController.navigate("${AppDestination.ProductDetailsRoute.route}/${product.id}?promoCode=$promoCode")
                                     }
                                 )
                             }
-                            composable("${AppDestination.ProductDetailsRoute.route}/{productId}") { backStackEntry ->
+                            composable(
+                                "${AppDestination.ProductDetailsRoute.route}/{productId}?promoCode={$promoCodeParam}",
+                                arguments = listOf(navArgument(promoCodeParam) {
+                                    nullable = true
+                                })
+                            ) { backStackEntry ->
 
                                 val id = backStackEntry.arguments?.getString("productId")
 
@@ -136,19 +147,41 @@ class MainActivity : ComponentActivity() {
                                 val selectedProduct = sampleProducts.firstOrNull { productModel ->
                                     productModel.id == id
                                 }
+
                                 Log.i(TAG, "Product selected: $selectedProduct")
 
+                                //Discount Product
+                                val promoCode = backStackEntry.arguments?.getString(promoCodeParam)
+                                sampleProducts.find {
+                                    it.id == id
+                                }?.let { productModel ->
 
-                                ProductDetailsScreen(
-                                    productModel = selectedProduct ?: sampleProducts.random(),
-                                    onNavigateToCheckout = {
-                                        navController.navigate(AppDestination.CheckoutRoute.route)
+                                    val discount = when (promoCode) {
+                                        "Coit" -> BigDecimal(0.1)
+                                        "Banana" -> BigDecimal(0.2)
+                                        "Fif" -> BigDecimal(0.5)
+                                        else -> BigDecimal.ZERO
                                     }
-                                )
+
+                                    val currentPrice = productModel.price
+
+                                    ProductDetailsScreen(
+                                        productModel = productModel.copy(price = currentPrice - (currentPrice * discount)),
+                                        onNavigateToCheckout = {
+                                            navController.navigate(AppDestination.CheckoutRoute.route)
+                                        }
+                                    )
+                                } ?: LaunchedEffect(Unit) {
+                                    navController.navigateUp()
+                                }
+
                             }
                             composable(AppDestination.CheckoutRoute.route) {
                                 CheckoutScreen(
-                                    productModels = sampleWomen
+                                    productModels = sampleWomen,
+                                    onPopBackStack = {
+                                        navController.navigateUp()
+                                    },
                                 )
                             }
                         }

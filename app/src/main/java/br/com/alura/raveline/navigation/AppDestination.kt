@@ -9,6 +9,9 @@ import br.com.alura.raveline.navigation.AppDestination.MenuRoute
 import br.com.alura.raveline.navigation.AppDestination.TrendsHighlightRoute
 import br.com.alura.raveline.ui.components.BottomAppBarItem
 
+// Constants
+const val promoCodeParam = "promoCode"
+
 const val homeRoute = "Home"
 const val drinksRoute = "Drinks"
 const val highLightsRoute = "HighLights"

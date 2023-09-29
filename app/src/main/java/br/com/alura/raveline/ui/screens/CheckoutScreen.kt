@@ -43,7 +43,8 @@ import br.com.alura.raveline.ui.theme.RavelineTheme
 @Composable
 fun CheckoutScreen(
     modifier: Modifier = Modifier,
-    productModels: List<ProductModel> = emptyList()
+    productModels: List<ProductModel> = emptyList(),
+    onPopBackStack: () -> Unit = {}
 ) {
     Box(
         modifier.fillMaxSize()
@@ -145,7 +146,9 @@ fun CheckoutScreen(
             }
         }
         Button(
-            onClick = { /*TODO*/ },
+            onClick = {
+                      onPopBackStack()
+                      },
             Modifier
                 .padding(
                     16.dp

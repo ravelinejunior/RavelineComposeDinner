@@ -1,6 +1,13 @@
 package br.com.alura.raveline.ui.components
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +25,7 @@ import br.com.alura.raveline.sampledata.sampleProductWithImageModel
 import br.com.alura.raveline.sampledata.sampleProductWithoutImageModel
 import br.com.alura.raveline.ui.theme.RavelineTheme
 import coil.compose.AsyncImage
+import java.text.DecimalFormat
 
 @Composable
 fun MenuProductCard(
@@ -35,6 +43,7 @@ fun MenuProductCard(
                     .padding(16.dp)
                     .weight(3f)
             ) {
+                val decimalFormat = DecimalFormat("0.00")
                 Text(
                     text = productModel.name,
                     Modifier.fillMaxWidth(),
@@ -45,7 +54,7 @@ fun MenuProductCard(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = productModel.price.toPlainString(),
+                    text = "$${decimalFormat.format(productModel.price)}",
                     Modifier.fillMaxWidth(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
