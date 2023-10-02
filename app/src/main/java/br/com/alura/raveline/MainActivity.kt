@@ -5,23 +5,22 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PointOfSale
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import br.com.alura.raveline.navigation.AppDestination
+import br.com.alura.raveline.navigation.RavelineNavHost
 import br.com.alura.raveline.navigation.bottomAppBarItems
-import br.com.alura.raveline.navigation.promoCodeParam
 import br.com.alura.raveline.sampledata.sampleDrinks
 import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.sampledata.sampleWomen
@@ -29,7 +28,6 @@ import br.com.alura.raveline.ui.components.BottomAppBarItem
 import br.com.alura.raveline.ui.components.RavelineBottomAppBar
 import br.com.alura.raveline.ui.screens.*
 import br.com.alura.raveline.ui.theme.RavelineTheme
-import java.math.BigDecimal
 
 class MainActivity : ComponentActivity() {
 
@@ -80,6 +78,13 @@ class MainActivity : ComponentActivity() {
                         else -> false
                     }
 
+                    val isProductSelected = currentDestination?.let {
+                        it.route?.contains(
+                            AppDestination.ProductDetailsRoute.route,
+                            ignoreCase = true
+                        )
+                    } ?: false
+
                     RavelineApp(
                         bottomAppBarItemSelected = selectedItem,
                         onBottomAppBarItemSelectedChange = {
@@ -95,96 +100,13 @@ class MainActivity : ComponentActivity() {
                         },
                         isShowBottomBar = containsInBottomAppBarItems,
                         isShowTopBar = containsInBottomAppBarItems,
-                        isShowFab = isShowFab
-                    ) {
-
-                        NavHost(
-                            navController = navController,
-                            startDestination = AppDestination.TrendsHighlightRoute.route,
-                        ) {
-                            composable(AppDestination.TrendsHighlightRoute.route) {
-                                HighlightsListScreen(
-                                    productModels = sampleProducts.sortedBy {
-                                        it.name
-                                    },
-                                    onNavigateProductClick = { product ->
-                                        val promoCode = "Fif"
-                                        navController.navigate("${AppDestination.ProductDetailsRoute.route}/${product.id}")
-                                    },
-                                    onNavigateOrderClick = {
-                                        navController.navigate(AppDestination.CheckoutRoute.route)
-                                    }
-                                )
-                            }
-                            composable(AppDestination.MenuRoute.route) {
-                                MenuListScreen(
-                                    productModels = sampleProducts + sampleWomen.shuffled(),
-                                    onNavigateToDetails = { product ->
-                                        val promoCode = "Banana"
-                                        navController.navigate("${AppDestination.ProductDetailsRoute.route}/${product.id}?promoCode=$promoCode")
-                                    }
-                                )
-                            }
-                            composable(AppDestination.DrinksRoute.route) {
-                                DrinksListScreen(
-                                    productModels = sampleWomen + sampleDrinks,
-                                    onNavigateToDetails = { product ->
-                                        val promoCode = "Coit"
-                                        navController.navigate("${AppDestination.ProductDetailsRoute.route}/${product.id}?promoCode=$promoCode")
-                                    }
-                                )
-                            }
-                            composable(
-                                "${AppDestination.ProductDetailsRoute.route}/{productId}?promoCode={$promoCodeParam}",
-                                arguments = listOf(navArgument(promoCodeParam) {
-                                    nullable = true
-                                })
-                            ) { backStackEntry ->
-
-                                val id = backStackEntry.arguments?.getString("productId")
-
-                                //Get selected product
-                                val selectedProduct = sampleProducts.firstOrNull { productModel ->
-                                    productModel.id == id
-                                }
-
-                                Log.i(TAG, "Product selected: $selectedProduct")
-
-                                //Discount Product
-                                val promoCode = backStackEntry.arguments?.getString(promoCodeParam)
-                                sampleProducts.find {
-                                    it.id == id
-                                }?.let { productModel ->
-
-                                    val discount = when (promoCode) {
-                                        "Coit" -> BigDecimal(0.1)
-                                        "Banana" -> BigDecimal(0.2)
-                                        "Fif" -> BigDecimal(0.5)
-                                        else -> BigDecimal.ZERO
-                                    }
-
-                                    val currentPrice = productModel.price
-
-                                    ProductDetailsScreen(
-                                        productModel = productModel.copy(price = currentPrice - (currentPrice * discount)),
-                                        onNavigateToCheckout = {
-                                            navController.navigate(AppDestination.CheckoutRoute.route)
-                                        }
-                                    )
-                                } ?: LaunchedEffect(Unit) {
-                                    navController.navigateUp()
-                                }
-
-                            }
-                            composable(AppDestination.CheckoutRoute.route) {
-                                CheckoutScreen(
-                                    productModels = sampleWomen,
-                                    onPopBackStack = {
-                                        navController.navigateUp()
-                                    },
-                                )
-                            }
+                        isShowFab = isShowFab,
+                        isProductDetailSelected = isProductSelected,
+                        onNavigateBack = {
+                            navController.navigateUp()
                         }
+                    ) {
+                        RavelineNavHost(navController = navController)
                     }
                 }
             }
@@ -197,7 +119,7 @@ class MainActivity : ComponentActivity() {
         val screens = remember {
             mutableStateListOf(initialScreen)
         }
-        Log.i("MainActivity", "onCreate: screens ${screens.toList()}")
+        Log.i(TAG, "onCreate: screens ${screens.toList()}")
         val currentScreen = screens.last()
         BackHandler(screens.size > 1) {
             screens.removeLast()
@@ -242,6 +164,8 @@ fun RavelineApp(
     isShowTopBar: Boolean = false,
     isShowBottomBar: Boolean = false,
     isShowFab: Boolean = false,
+    isProductDetailSelected: Boolean = false,
+    onNavigateBack: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     Scaffold(
@@ -253,6 +177,22 @@ fun RavelineApp(
                     },
                 )
             }
+            if (isProductDetailSelected) {
+                CenterAlignedTopAppBar(
+                    title = {
+                        Text(text = "")
+                    },
+                    navigationIcon = {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = null,
+                            modifier = Modifier.clickable {
+                                onNavigateBack()
+                            })
+                    }
+                )
+            }
+
         },
         bottomBar = {
             if (isShowBottomBar) {
