@@ -13,10 +13,11 @@ import java.math.BigDecimal
 
 private const val productIdArgument = "productId"
 internal const val promoCodeArgument = "promoCode"
+const val productDetailsRoute = "ProductDetails"
 
 fun NavGraphBuilder.productDetailsScreen(navController: NavHostController) {
     composable(
-        "${AppDestination.ProductDetailsRoute.route}/{$productIdArgument}?$promoCodeArgument={$promoCodeParam}",
+        "$productDetailsRoute/{$productIdArgument}?$promoCodeArgument={$promoCodeParam}",
         arguments = listOf(navArgument(promoCodeParam) {
             nullable = true
         })
@@ -60,5 +61,5 @@ fun NavGraphBuilder.productDetailsScreen(navController: NavHostController) {
 }
 
 fun NavController.navigateToProductDetails(productId: String, promoCode: String = String()) {
-    navigate("${AppDestination.ProductDetailsRoute.route}/$productId?$promoCodeArgument=$promoCode")
+    navigate("$productDetailsRoute/$productId?$promoCodeArgument=$promoCode")
 }

@@ -7,8 +7,10 @@ import androidx.navigation.compose.composable
 import br.com.alura.raveline.sampledata.sampleWomen
 import br.com.alura.raveline.ui.screens.CheckoutScreen
 
+const val checkoutRoute = "Checkout"
+
 fun NavGraphBuilder.checkoutScreen(navController: NavHostController) {
-    composable(AppDestination.CheckoutRoute.route) {
+    composable(checkoutRoute) {
         CheckoutScreen(
             productModels = sampleWomen,
             onPopBackStack = {
@@ -19,5 +21,5 @@ fun NavGraphBuilder.checkoutScreen(navController: NavHostController) {
 }
 
 fun NavController.navigateToCheckout(){
-    navigate(AppDestination.CheckoutRoute.route)
+    navigate(checkoutRoute)
 }

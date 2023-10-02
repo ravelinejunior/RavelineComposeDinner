@@ -3,12 +3,15 @@ package br.com.alura.raveline.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.screens.HighlightsListScreen
 
+const val highLightsRoute = "HighLights"
+
 fun NavGraphBuilder.highlightsListScreen(navController: NavHostController) {
-    composable(AppDestination.TrendsHighlightRoute.route) {
+    composable(highLightsRoute) {
         HighlightsListScreen(
             productModels = sampleProducts.sortedBy {
                 it.name
@@ -18,12 +21,14 @@ fun NavGraphBuilder.highlightsListScreen(navController: NavHostController) {
                 navController.navigateToProductDetails(product.id)
             },
             onNavigateOrderClick = {
-                navController.navigate(AppDestination.CheckoutRoute.route)
+                navController.navigate(highLightsRoute)
             }
         )
     }
 }
 
-fun NavController.navigateToHighlightList() {
-    navigate(AppDestination.TrendsHighlightRoute.route)
+fun NavController.navigateToHighlightList(
+    navOptions: NavOptions? = null
+) {
+    navigate(highLightsRoute,navOptions)
 }

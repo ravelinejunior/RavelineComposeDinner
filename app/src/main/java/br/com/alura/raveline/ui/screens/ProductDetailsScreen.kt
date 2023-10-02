@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import br.com.alura.raveline.R
 import br.com.alura.raveline.model.ProductModel
 import br.com.alura.raveline.sampledata.sampleProducts
+import br.com.alura.raveline.ui.theme.Purple700
 import br.com.alura.raveline.ui.theme.RavelineTheme
 import coil.compose.AsyncImage
 import java.text.DecimalFormat
@@ -69,7 +70,7 @@ fun ProductDetailsScreen(
                 Modifier
                     .fillMaxWidth()
                     .heightIn(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
+                colors = ButtonDefaults.buttonColors(containerColor = Purple700)
             ) {
                 Text(text = stringResource(R.string.order_s), color = Color.White)
             }

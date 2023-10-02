@@ -38,6 +38,7 @@ import br.com.alura.raveline.R
 import br.com.alura.raveline.model.ProductModel
 import br.com.alura.raveline.sampledata.sampleProductModels
 import br.com.alura.raveline.ui.components.CheckoutItemCard
+import br.com.alura.raveline.ui.theme.Purple700
 import br.com.alura.raveline.ui.theme.RavelineTheme
 
 @Composable
@@ -156,7 +157,7 @@ fun CheckoutScreen(
                 .fillMaxWidth()
                 .heightIn(54.dp)
                 .align(Alignment.BottomCenter),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onPrimary)
+            colors = ButtonDefaults.buttonColors(containerColor = Purple700)
         ) {
             Icon(
                 Icons.Outlined.AccountBalanceWallet,

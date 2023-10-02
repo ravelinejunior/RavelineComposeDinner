@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,16 +16,23 @@ import androidx.compose.material.icons.filled.PointOfSale
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import br.com.alura.raveline.navigation.AppDestination
+import androidx.navigation.navOptions
+import br.com.alura.raveline.navigation.BottomAppBarItem
 import br.com.alura.raveline.navigation.RavelineNavHost
 import br.com.alura.raveline.navigation.bottomAppBarItems
-import br.com.alura.raveline.sampledata.sampleDrinks
+import br.com.alura.raveline.navigation.checkoutRoute
+import br.com.alura.raveline.navigation.drinksRoute
+import br.com.alura.raveline.navigation.highLightsRoute
+import br.com.alura.raveline.navigation.menuRoute
+import br.com.alura.raveline.navigation.navigateMenuList
+import br.com.alura.raveline.navigation.navigateToDrinksList
+import br.com.alura.raveline.navigation.navigateToHighlightList
+import br.com.alura.raveline.navigation.productDetailsRoute
 import br.com.alura.raveline.sampledata.sampleProducts
-import br.com.alura.raveline.sampledata.sampleWomen
-import br.com.alura.raveline.ui.components.BottomAppBarItem
 import br.com.alura.raveline.ui.components.RavelineBottomAppBar
 import br.com.alura.raveline.ui.screens.*
 import br.com.alura.raveline.ui.theme.RavelineTheme
@@ -54,49 +62,72 @@ class MainActivity : ComponentActivity() {
 
                     val backStackEntryState by navController.currentBackStackEntryAsState()
                     val currentDestination = backStackEntryState?.destination
+                    val currentRoute = currentDestination?.route
 
                     val selectedItem by remember(currentDestination) {
-                        val item = currentDestination?.let { destination ->
-                            bottomAppBarItems.find {
-                                it.destination.route == destination.route
-                            }
-                        } ?: bottomAppBarItems.first()
+
+                        val item = when (currentRoute) {
+                            highLightsRoute -> BottomAppBarItem.HighlightListItemBar
+                            menuRoute -> BottomAppBarItem.MenuItemBar
+                            drinksRoute -> BottomAppBarItem.DrinksItemBar
+                            else -> BottomAppBarItem.HighlightListItemBar
+                        }
+
                         mutableStateOf(item)
                     }
 
                     //Verify if bottom app bar has items
-                    val containsInBottomAppBarItems = currentDestination?.let { navDestination ->
-                        bottomAppBarItems.find {
-                            it.destination.route == navDestination.route
-                        }
-                    } != null
+                    val containsInBottomAppBarItems = when (currentRoute) {
+                        highLightsRoute, menuRoute, drinksRoute -> true
+                        else -> false
+                    }
 
                     val isShowFab = when (currentDestination?.route) {
-                        AppDestination.MenuRoute.route,
-                        AppDestination.DrinksRoute.route -> true
+                        menuRoute,
+                        drinksRoute -> true
 
                         else -> false
                     }
 
                     val isProductSelected = currentDestination?.let {
                         it.route?.contains(
-                            AppDestination.ProductDetailsRoute.route,
+                            productDetailsRoute,
                             ignoreCase = true
                         )
                     } ?: false
 
                     RavelineApp(
                         bottomAppBarItemSelected = selectedItem,
-                        onBottomAppBarItemSelectedChange = {
-                            val route = it.destination.route
-                            navController.navigate(route = route) {
+                        onBottomAppBarItemSelectedChange = { item ->
+
+                            val (route, navigate) = when (item) {
+
+                                BottomAppBarItem.HighlightListItemBar -> Pair(
+                                    highLightsRoute,
+                                    navController::navigateToHighlightList
+                                )
+
+                                BottomAppBarItem.MenuItemBar -> Pair(
+                                    menuRoute,
+                                    navController::navigateMenuList
+                                )
+
+                                BottomAppBarItem.DrinksItemBar -> Pair(
+                                    drinksRoute,
+                                    navController::navigateToDrinksList
+                                )
+                            }
+
+                            val navOptions = navOptions {
                                 launchSingleTop = true
                                 popUpTo(route)
                             }
+
+                            navigate(navOptions)
                         },
                         onFabClick = {
                             //Navigate to checkout
-                            navController.navigate(AppDestination.CheckoutRoute.route)
+                            navController.navigate(checkoutRoute)
                         },
                         isShowBottomBar = containsInBottomAppBarItems,
                         isShowTopBar = containsInBottomAppBarItems,
@@ -142,7 +173,7 @@ class MainActivity : ComponentActivity() {
             )
 
             getString(R.string.drinks_and_cocktails) -> DrinksListScreen(
-                productModels = sampleDrinks + sampleWomen
+                productModels = sampleProducts
             )
 
             getString(R.string.products_details) -> ProductDetailsScreen(
@@ -180,8 +211,9 @@ fun RavelineApp(
             if (isProductDetailSelected) {
                 CenterAlignedTopAppBar(
                     title = {
-                        Text(text = "")
+                        Text(text = "Back")
                     },
+                    Modifier.background(Color.Transparent),
                     navigationIcon = {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,

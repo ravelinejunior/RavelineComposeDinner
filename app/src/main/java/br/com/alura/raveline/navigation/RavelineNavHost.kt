@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 
-val TAG: String = "RavelineNavHost"
+const val TAG: String = "RavelineNavHost"
 
 @Composable
 fun RavelineNavHost(
@@ -12,7 +12,7 @@ fun RavelineNavHost(
 ) {
     NavHost(
         navController = navController,
-        startDestination = AppDestination.TrendsHighlightRoute.route,
+        startDestination = highLightsRoute,
     ) {
         highlightsListScreen(navController)
         menuListScreen(navController)
@@ -20,5 +20,5 @@ fun RavelineNavHost(
         productDetailsScreen(navController)
         checkoutScreen(navController)
     }
-
 }
+
