@@ -3,7 +3,6 @@ package br.com.alura.raveline
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,19 +19,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
 import br.com.alura.raveline.navigation.BottomAppBarItem
-import br.com.alura.raveline.navigation.RavelineNavHost
+import br.com.alura.raveline.navigation.nav_host.RavelineNavHost
 import br.com.alura.raveline.navigation.bottomAppBarItems
 import br.com.alura.raveline.navigation.checkoutRoute
 import br.com.alura.raveline.navigation.drinksRoute
+import br.com.alura.raveline.navigation.graph.navigateSingleTopWithPopUpTo
 import br.com.alura.raveline.navigation.highLightsRoute
 import br.com.alura.raveline.navigation.menuRoute
-import br.com.alura.raveline.navigation.navigateMenuList
-import br.com.alura.raveline.navigation.navigateToDrinksList
-import br.com.alura.raveline.navigation.navigateToHighlightList
 import br.com.alura.raveline.navigation.productDetailsRoute
-import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.components.RavelineBottomAppBar
 import br.com.alura.raveline.ui.screens.*
 import br.com.alura.raveline.ui.theme.RavelineTheme
@@ -99,31 +94,7 @@ class MainActivity : ComponentActivity() {
                     RavelineApp(
                         bottomAppBarItemSelected = selectedItem,
                         onBottomAppBarItemSelectedChange = { item ->
-
-                            val (route, navigate) = when (item) {
-
-                                BottomAppBarItem.HighlightListItemBar -> Pair(
-                                    highLightsRoute,
-                                    navController::navigateToHighlightList
-                                )
-
-                                BottomAppBarItem.MenuItemBar -> Pair(
-                                    menuRoute,
-                                    navController::navigateMenuList
-                                )
-
-                                BottomAppBarItem.DrinksItemBar -> Pair(
-                                    drinksRoute,
-                                    navController::navigateToDrinksList
-                                )
-                            }
-
-                            val navOptions = navOptions {
-                                launchSingleTop = true
-                                popUpTo(route)
-                            }
-
-                            navigate(navOptions)
+                            navController.navigateSingleTopWithPopUpTo(item)
                         },
                         onFabClick = {
                             //Navigate to checkout
@@ -144,45 +115,8 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    private fun GenericNavigationInit() {
-        val initialScreen = getString(R.string.trends)
-        val screens = remember {
-            mutableStateListOf(initialScreen)
-        }
-        Log.i(TAG, "onCreate: screens ${screens.toList()}")
-        val currentScreen = screens.last()
-        BackHandler(screens.size > 1) {
-            screens.removeLast()
-        }
 
-        when (currentScreen) {
-            getString(R.string.trends) -> HighlightsListScreen(
-                productModels = sampleProducts,
-                onNavigateOrderClick = {
-                    screens.add(getString(R.string.order))
-                },
-                onNavigateProductClick = {
-                    screens.add(getString(R.string.products_details))
-                }
-            )
 
-            getString(R.string.menu) -> MenuListScreen(
-                productModels = sampleProducts,
-                onNavigateToDetails = {}
-            )
-
-            getString(R.string.drinks_and_cocktails) -> DrinksListScreen(
-                productModels = sampleProducts
-            )
-
-            getString(R.string.products_details) -> ProductDetailsScreen(
-                productModel = sampleProducts.random()
-            )
-
-            getString(R.string.order) -> CheckoutScreen(productModels = sampleProducts)
-        }
-    }
 
 }
 
@@ -265,3 +199,47 @@ private fun RavelineAppPreview() {
         }
     }
 }
+/*
+
+@Composable
+private fun GenericNavigationInit() {
+    val initialScreen = getString(R.string.trends)
+    val screens = remember {
+        mutableStateListOf(initialScreen)
+    }
+    Log.i(TAG, "onCreate: screens ${screens.toList()}")
+    val currentScreen = screens.last()
+    BackHandler(screens.size > 1) {
+        screens.removeLast()
+    }
+
+    when (currentScreen) {
+        getString(R.string.trends) -> HighlightsListScreen(
+            productModels = sampleProducts,
+            onNavigateOrderClick = {
+                screens.add(getString(R.string.order))
+            },
+            onNavigateProductClick = {
+                screens.add(getString(R.string.products_details))
+            }
+        )
+
+        getString(R.string.menu) -> MenuListScreen(
+            productModels = sampleProducts,
+            onNavigateToDetails = {
+
+            }
+        )
+
+        getString(R.string.drinks_and_cocktails) -> DrinksListScreen(
+            productModels = sampleProducts
+        )
+
+        getString(R.string.products_details) -> ProductDetailsScreen(
+            productModel = sampleProducts.random()
+        )
+
+        getString(R.string.order) -> CheckoutScreen(productModels = sampleProducts)
+    }
+}*/
+

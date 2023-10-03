@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import br.com.alura.raveline.navigation.nav_host.TAG
 import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.screens.ProductDetailsScreen
 import java.math.BigDecimal

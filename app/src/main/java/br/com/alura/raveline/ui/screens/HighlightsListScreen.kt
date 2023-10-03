@@ -53,7 +53,9 @@ fun HighlightsListScreen(
                     Modifier.clickable {
                         onNavigateProductClick(p)
                     },
-                    onOrderClick = onNavigateOrderClick
+                    onOrderClick = {
+                        onNavigateProductClick(p)
+                    }
                 )
             }
         }

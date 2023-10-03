@@ -2,7 +2,6 @@ package br.com.alura.raveline.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
 import br.com.alura.raveline.sampledata.sampleDrinks
@@ -11,7 +10,7 @@ import br.com.alura.raveline.ui.screens.DrinksListScreen
 
 const val drinksRoute = "Drinks"
 
-fun NavGraphBuilder.drinksListScreen(navController: NavHostController) {
+fun NavGraphBuilder.drinksListScreen(navController: NavController) {
     composable(drinksRoute) {
         DrinksListScreen(
             productModels = sampleWomen + sampleDrinks,
