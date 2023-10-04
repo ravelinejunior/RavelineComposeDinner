@@ -2,6 +2,9 @@ package br.com.alura.raveline.navigation
 
 import android.util.Log
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -10,6 +13,7 @@ import androidx.navigation.navArgument
 import br.com.alura.raveline.navigation.nav_host.TAG
 import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.screens.ProductDetailsScreen
+import br.com.alura.raveline.ui.viewmodel.ProductDetailsViewModel
 import java.math.BigDecimal
 
 private const val productIdArgument = "productId"
@@ -17,12 +21,16 @@ internal const val promoCodeArgument = "promoCode"
 const val productDetailsRoute = "ProductDetails"
 
 fun NavGraphBuilder.productDetailsScreen(navController: NavHostController) {
+
     composable(
         "$productDetailsRoute/{$productIdArgument}?$promoCodeArgument={$promoCodeParam}",
         arguments = listOf(navArgument(promoCodeParam) {
             nullable = true
         })
     ) { backStackEntry ->
+
+        val viewModel: ProductDetailsViewModel = viewModel()
+        val uiState by viewModel.uiState.collectAsState()
 
         val id = backStackEntry.arguments?.getString(productIdArgument)
 
@@ -49,7 +57,8 @@ fun NavGraphBuilder.productDetailsScreen(navController: NavHostController) {
             val currentPrice = productModel.price
 
             ProductDetailsScreen(
-                productModel = productModel.copy(price = currentPrice - (currentPrice * discount)),
+
+                uiState = uiState.copy(product = productModel.copy(price = currentPrice - (currentPrice * discount))),
                 onNavigateToCheckout = {
                     navController.navigateToCheckout()
                 }

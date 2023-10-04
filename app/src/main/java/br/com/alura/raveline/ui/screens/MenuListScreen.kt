@@ -18,18 +18,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.alura.raveline.model.ProductModel
-import br.com.alura.raveline.sampledata.sampleProductModels
+import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.components.MenuProductCard
 import br.com.alura.raveline.ui.theme.RavelineTheme
 import br.com.alura.raveline.ui.theme.caveatFont
+import br.com.alura.raveline.ui.uistate.MenuListUiState
 
 @Composable
 fun MenuListScreen(
     modifier: Modifier = Modifier,
     title: String = "Menu",
-    productModels: List<ProductModel> = emptyList(),
+    uiState: MenuListUiState = MenuListUiState(),
     onNavigateToDetails: (ProductModel) -> Unit = {}
 ) {
+
+    val productModels = uiState.products
     Column(
         modifier.fillMaxSize()
     ) {
@@ -68,7 +71,7 @@ fun MenuListScreenPreview() {
     RavelineTheme {
         Surface {
             MenuListScreen(
-                productModels = sampleProductModels
+                uiState = MenuListUiState(products = sampleProducts)
             )
         }
     }

@@ -1,7 +1,12 @@
 package br.com.alura.raveline.ui.screens
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
@@ -13,19 +18,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.alura.raveline.model.ProductModel
-import br.com.alura.raveline.sampledata.sampleProductModels
+import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.components.HighlightProductCard
 import br.com.alura.raveline.ui.theme.RavelineTheme
 import br.com.alura.raveline.ui.theme.caveatFont
+import br.com.alura.raveline.ui.uistate.HighlightsListUiState
 
 @Composable
 fun HighlightsListScreen(
     modifier: Modifier = Modifier,
     title: String = "Trending Day",
-    productModels: List<ProductModel> = emptyList(),
+    uiState: HighlightsListUiState = HighlightsListUiState(),
     onNavigateOrderClick: () -> Unit = {},
     onNavigateProductClick: (ProductModel) -> Unit = {}
 ) {
+
+    val productModels = uiState.products
+
     Column(
         modifier
             .fillMaxSize()
@@ -68,7 +77,7 @@ fun HighlightsListScreenPreview() {
     RavelineTheme {
         Surface {
             HighlightsListScreen(
-                productModels = sampleProductModels,
+                uiState = HighlightsListUiState(products = sampleProducts),
                 title = "Trending Day"
             )
         }

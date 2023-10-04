@@ -11,7 +11,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,25 +23,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.alura.raveline.R
-import br.com.alura.raveline.model.ProductModel
 import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.theme.Purple700
 import br.com.alura.raveline.ui.theme.RavelineTheme
+import br.com.alura.raveline.ui.uistate.ProductDetailsUiState
 import coil.compose.AsyncImage
 import java.text.DecimalFormat
 
 @Composable
 fun ProductDetailsScreen(
-    productModel: ProductModel,
     modifier: Modifier = Modifier,
+    uiState: ProductDetailsUiState = ProductDetailsUiState(),
     onNavigateToCheckout: () -> Unit = {}
 ) {
+
+    val productModel = uiState.product
+
     Column(
         modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        productModel.image?.let {
+        productModel?.image?.let {
             AsyncImage(
                 model = productModel.image,
                 contentDescription = null,
@@ -60,9 +62,9 @@ fun ProductDetailsScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val decimalFormat = DecimalFormat("0.00")
-            Text("$${decimalFormat.format(productModel.price)}", fontSize = 18.sp)
-            Text(productModel.name, fontSize = 24.sp)
-            Text(productModel.description)
+            Text("$${decimalFormat.format(productModel?.price)}", fontSize = 18.sp)
+            Text(productModel?.name.toString(), fontSize = 24.sp)
+            Text(productModel?.description.toString())
             Button(
                 onClick = {
                     onNavigateToCheckout()
@@ -84,7 +86,7 @@ fun ProductDetailsScreenPreview() {
     RavelineTheme {
         Surface {
             ProductDetailsScreen(
-                productModel = sampleProducts.random(),
+                uiState = ProductDetailsUiState(product = sampleProducts.random())
             )
         }
     }

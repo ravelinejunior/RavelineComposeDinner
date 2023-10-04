@@ -15,20 +15,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.alura.raveline.model.ProductModel
-import br.com.alura.raveline.sampledata.sampleProductModels
+import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.components.DrinkProductCard
 import br.com.alura.raveline.ui.theme.RavelineTheme
 import br.com.alura.raveline.ui.theme.caveatFont
+import br.com.alura.raveline.ui.uistate.DrinksListUiState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DrinksListScreen(
     modifier: Modifier = Modifier,
     title: String = "Drinks And Cocktails",
-    productModels: List<ProductModel> = emptyList(),
+    uiState: DrinksListUiState = DrinksListUiState(),
     columns: Int = 2,
     onNavigateToDetails: (ProductModel) -> Unit = {}
 ) {
+
+    val products = uiState.products
+
     Column(
         modifier
             .fillMaxSize()
@@ -51,7 +55,7 @@ fun DrinksListScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalItemSpacing = 16.dp
         ) {
-            items(productModels) { p ->
+            items(products) { p ->
                 DrinkProductCard(
                     productModel = p,
                     modifier = Modifier.clickable {
@@ -69,7 +73,7 @@ fun DrinksListScreenPreview() {
     RavelineTheme {
         Surface {
             DrinksListScreen(
-                productModels = sampleProductModels,
+                uiState = DrinksListUiState(products = sampleProducts),
                 title = "Drinks"
             )
         }

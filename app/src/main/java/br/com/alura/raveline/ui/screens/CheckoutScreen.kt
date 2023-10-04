@@ -35,18 +35,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.alura.raveline.R
-import br.com.alura.raveline.model.ProductModel
-import br.com.alura.raveline.sampledata.sampleProductModels
+import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.components.CheckoutItemCard
 import br.com.alura.raveline.ui.theme.Purple700
 import br.com.alura.raveline.ui.theme.RavelineTheme
+import br.com.alura.raveline.ui.uistate.CheckoutUiState
 
 @Composable
 fun CheckoutScreen(
     modifier: Modifier = Modifier,
-    productModels: List<ProductModel> = emptyList(),
+    uiState: CheckoutUiState = CheckoutUiState(),
     onPopBackStack: () -> Unit = {}
 ) {
+    val productModels = uiState.products
     Box(
         modifier.fillMaxSize()
     ) {
@@ -148,8 +149,8 @@ fun CheckoutScreen(
         }
         Button(
             onClick = {
-                      onPopBackStack()
-                      },
+                onPopBackStack()
+            },
             Modifier
                 .padding(
                     16.dp
@@ -179,7 +180,7 @@ fun CheckoutScreenPreview() {
     RavelineTheme {
         Surface {
             CheckoutScreen(
-                productModels = sampleProductModels
+                uiState = CheckoutUiState(products = sampleProducts)
             )
         }
     }
