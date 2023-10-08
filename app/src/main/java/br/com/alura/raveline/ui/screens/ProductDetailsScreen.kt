@@ -23,62 +23,93 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.alura.raveline.R
-import br.com.alura.raveline.sampledata.sampleProducts
+import br.com.alura.raveline.ui.components.FailureScreen
+import br.com.alura.raveline.ui.components.LoadingScreen
 import br.com.alura.raveline.ui.theme.Purple700
 import br.com.alura.raveline.ui.theme.RavelineTheme
 import br.com.alura.raveline.ui.uistate.ProductDetailsUiState
 import coil.compose.AsyncImage
+import java.math.BigDecimal
 import java.text.DecimalFormat
 
 @Composable
 fun ProductDetailsScreen(
     modifier: Modifier = Modifier,
-    uiState: ProductDetailsUiState = ProductDetailsUiState(),
-    onNavigateToCheckout: () -> Unit = {}
+    discount: BigDecimal = BigDecimal.ZERO,
+    uiState: ProductDetailsUiState,
+    onNavigateToCheckout: () -> Unit = {},
+    onRetryProduct: () -> Unit = {},
+    onBackStack: () -> Unit = {}
 ) {
 
-    val productModel = uiState.product
+    when (uiState) {
 
-    Column(
-        modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-    ) {
-        productModel?.image?.let {
-            AsyncImage(
-                model = productModel.image,
-                contentDescription = null,
-                modifier = Modifier
-                    .height(400.dp)
-                    .fillMaxWidth(),
-                placeholder = painterResource(id = R.drawable.placeholder),
-                contentScale = ContentScale.Crop
+        is ProductDetailsUiState.Loading -> {
+            LoadingScreen()
+        }
+
+        is ProductDetailsUiState.Failure -> {
+            val message = uiState.message
+            FailureScreen(
+                onRetryProduct = onRetryProduct,
+                onBackStack = onBackStack,
+                message = message
             )
         }
-        Column(
-            Modifier
-                .padding(16.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            val decimalFormat = DecimalFormat("0.00")
-            Text("$${decimalFormat.format(productModel?.price)}", fontSize = 18.sp)
-            Text(productModel?.name.toString(), fontSize = 24.sp)
-            Text(productModel?.description.toString())
-            Button(
-                onClick = {
-                    onNavigateToCheckout()
-                },
-                Modifier
-                    .fillMaxWidth()
-                    .heightIn(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Purple700)
+
+        is ProductDetailsUiState.Success -> {
+
+            val nProduct = uiState.productModel
+
+            val product = nProduct.copy(
+                price = nProduct.price.minus((nProduct.price * discount))
+            )
+
+            Column(
+                modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
             ) {
-                Text(text = stringResource(R.string.order_s), color = Color.White)
+
+                AsyncImage(
+                    model = product.image,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(400.dp)
+                        .fillMaxWidth(),
+                    placeholder = painterResource(id = R.drawable.placeholder),
+                    contentScale = ContentScale.Crop
+                )
+
+                Column(
+                    Modifier
+                        .padding(16.dp)
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val decimalFormat = DecimalFormat("0.00")
+                    Text("$${decimalFormat.format(product.price)}", fontSize = 18.sp)
+                    Text(product.name, fontSize = 24.sp)
+                    Text(product.description)
+                    Button(
+                        onClick = {
+                            onNavigateToCheckout()
+                        },
+                        Modifier
+                            .fillMaxWidth()
+                            .heightIn(56.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Purple700)
+                    ) {
+                        Text(text = stringResource(R.string.order_s), color = Color.White)
+                    }
+                }
             }
+
         }
+
     }
 }
+
 
 @Preview
 @Composable
@@ -86,7 +117,7 @@ fun ProductDetailsScreenPreview() {
     RavelineTheme {
         Surface {
             ProductDetailsScreen(
-                uiState = ProductDetailsUiState(product = sampleProducts.random())
+                uiState = ProductDetailsUiState.Failure(),
             )
         }
     }

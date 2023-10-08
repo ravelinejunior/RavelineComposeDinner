@@ -1,6 +1,5 @@
 package br.com.alura.raveline.navigation
 
-import android.util.Log
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -10,8 +9,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import br.com.alura.raveline.navigation.nav_host.TAG
-import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.screens.ProductDetailsScreen
 import br.com.alura.raveline.ui.viewmodel.ProductDetailsViewModel
 import java.math.BigDecimal
@@ -32,20 +29,14 @@ fun NavGraphBuilder.productDetailsScreen(navController: NavHostController) {
         val viewModel: ProductDetailsViewModel = viewModel()
         val uiState by viewModel.uiState.collectAsState()
 
-        val id = backStackEntry.arguments?.getString(productIdArgument)
+        backStackEntry.arguments?.getString(productIdArgument)?.let { id ->
 
-        //Get selected product
-        val selectedProduct = sampleProducts.firstOrNull { productModel ->
-            productModel.id == id
-        }
+            LaunchedEffect(Unit) {
+                viewModel.findProductById(id)
+            }
 
-        Log.i(TAG, "Product selected: $selectedProduct")
-
-        //Discount Product
-        val promoCode = backStackEntry.arguments?.getString(promoCodeParam)
-        sampleProducts.find {
-            it.id == id
-        }?.let { productModel ->
+            //Discount Product
+            val promoCode = backStackEntry.arguments?.getString(promoCodeParam)
 
             val discount = when (promoCode) {
                 "Coit" -> BigDecimal(0.1)
@@ -54,13 +45,18 @@ fun NavGraphBuilder.productDetailsScreen(navController: NavHostController) {
                 else -> BigDecimal.ZERO
             }
 
-            val currentPrice = productModel.price
-
             ProductDetailsScreen(
 
-                uiState = uiState.copy(product = productModel.copy(price = currentPrice - (currentPrice * discount))),
+                uiState = uiState,
+                discount = discount,
                 onNavigateToCheckout = {
                     navController.navigateToCheckout()
+                },
+                onRetryProduct = {
+                    viewModel.findProductById(id)
+                },
+                onBackStack = {
+                    navController.navigateUp()
                 }
             )
         } ?: LaunchedEffect(Unit) {
