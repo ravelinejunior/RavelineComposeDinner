@@ -17,7 +17,10 @@ private const val productIdArgument = "productId"
 internal const val promoCodeArgument = "promoCode"
 const val productDetailsRoute = "ProductDetails"
 
-fun NavGraphBuilder.productDetailsScreen(navController: NavHostController) {
+fun NavGraphBuilder.productDetailsScreen(
+    onNavigateToCheckout: () -> Unit,
+    onPopBackStack: () -> Unit
+) {
 
     composable(
         "$productDetailsRoute/{$productIdArgument}?$promoCodeArgument={$promoCodeParam}",
@@ -49,18 +52,14 @@ fun NavGraphBuilder.productDetailsScreen(navController: NavHostController) {
 
                 uiState = uiState,
                 discount = discount,
-                onNavigateToCheckout = {
-                    navController.navigateToCheckout()
-                },
+                onNavigateToCheckout = onNavigateToCheckout,
                 onRetryProduct = {
                     viewModel.findProductById(id)
                 },
-                onBackStack = {
-                    navController.navigateUp()
-                }
+                onBackStack = onPopBackStack
             )
         } ?: LaunchedEffect(Unit) {
-            navController.navigateUp()
+            onPopBackStack()
         }
 
     }

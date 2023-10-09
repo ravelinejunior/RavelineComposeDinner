@@ -4,6 +4,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navOptions
 import androidx.navigation.navigation
+import br.com.alura.raveline.model.ProductModel
 import br.com.alura.raveline.navigation.BottomAppBarItem
 import br.com.alura.raveline.navigation.drinksListScreen
 import br.com.alura.raveline.navigation.drinksRoute
@@ -17,18 +18,28 @@ import br.com.alura.raveline.navigation.navigateToHighlightList
 
 internal const val homeGraphRoute = "HomeGraph"
 
-fun NavGraphBuilder.homeGraph(navController: NavController) {
+fun NavGraphBuilder.homeGraph(
+    onNavigateToCheckout: () -> Unit,
+    onNavigateToProductDetails: (ProductModel) -> Unit
+) {
     navigation(
         startDestination = highLightsRoute,
         route = homeGraphRoute
     ) {
-        highlightsListScreen(navController)
-        menuListScreen(navController)
-        drinksListScreen(navController)
+        highlightsListScreen(
+            onNavigateToCheckout,
+            onNavigateToProductDetails
+        )
+        menuListScreen(
+            onNavigateToProductDetails
+        )
+        drinksListScreen(
+            onNavigateToProductDetails
+        )
     }
 }
 
-fun NavController.navigateToHomeGraph(){
+fun NavController.navigateToHomeGraph() {
     navigate(homeGraphRoute)
 }
 

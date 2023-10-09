@@ -29,8 +29,8 @@ fun HighlightsListScreen(
     modifier: Modifier = Modifier,
     title: String = "Trending Day",
     uiState: HighlightsListUiState = HighlightsListUiState(),
-    onNavigateOrderClick: () -> Unit = {},
-    onNavigateProductClick: (ProductModel) -> Unit = {}
+    onNavigateProductClick: (ProductModel) -> Unit = {},
+    onOrderClick: () -> Unit = {}
 ) {
 
     val productModels = uiState.products
@@ -63,7 +63,7 @@ fun HighlightsListScreen(
                         onNavigateProductClick(p)
                     },
                     onOrderClick = {
-                        onNavigateProductClick(p)
+                        onOrderClick()
                     }
                 )
             }
@@ -77,8 +77,10 @@ fun HighlightsListScreenPreview() {
     RavelineTheme {
         Surface {
             HighlightsListScreen(
+                title = "Trending Day",
                 uiState = HighlightsListUiState(products = sampleProducts),
-                title = "Trending Day"
+                onNavigateProductClick = { },
+                onOrderClick = {}
             )
         }
     }

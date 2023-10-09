@@ -28,7 +28,7 @@ fun DrinksListScreen(
     title: String = "Drinks And Cocktails",
     uiState: DrinksListUiState = DrinksListUiState(),
     columns: Int = 2,
-    onNavigateToDetails: (ProductModel) -> Unit = {}
+    onProductClick: (ProductModel) -> Unit = {},
 ) {
 
     val products = uiState.products
@@ -59,7 +59,7 @@ fun DrinksListScreen(
                 DrinkProductCard(
                     productModel = p,
                     modifier = Modifier.clickable {
-                        onNavigateToDetails(p)
+                        onProductClick(p)
                     }
                 )
             }
@@ -73,8 +73,9 @@ fun DrinksListScreenPreview() {
     RavelineTheme {
         Surface {
             DrinksListScreen(
+                title = "Drinks",
                 uiState = DrinksListUiState(products = sampleProducts),
-                title = "Drinks"
+                onProductClick = {}
             )
         }
     }

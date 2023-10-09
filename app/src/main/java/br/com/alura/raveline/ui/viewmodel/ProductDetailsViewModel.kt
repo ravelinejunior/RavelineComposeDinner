@@ -22,7 +22,7 @@ class ProductDetailsViewModel(
 
     fun findProductById(id: String) = viewModelScope.launch {
 
-        val timeMillis = Random.nextLong(1500,3000)
+        val timeMillis = Random.nextLong(500,2000)
         delay(timeMillis)
 
         _uiState.update {

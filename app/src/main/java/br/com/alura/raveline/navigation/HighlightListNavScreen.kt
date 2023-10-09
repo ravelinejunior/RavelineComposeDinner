@@ -7,25 +7,23 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
-import br.com.alura.raveline.sampledata.sampleProducts
+import br.com.alura.raveline.model.ProductModel
 import br.com.alura.raveline.ui.screens.HighlightsListScreen
 import br.com.alura.raveline.ui.viewmodel.HighlightsListViewModel
 
 const val highLightsRoute = "HighLights"
 
-fun NavGraphBuilder.highlightsListScreen(navController: NavController) {
+fun NavGraphBuilder.highlightsListScreen(
+    onNavigateToCheckout: () -> Unit,
+    onNavigateToProductDetails: (ProductModel) -> Unit
+) {
     composable(highLightsRoute) {
         val viewModel: HighlightsListViewModel = viewModel()
         val uiState by viewModel.uiState.collectAsState()
         HighlightsListScreen(
             uiState = uiState,
-            onNavigateProductClick = { product ->
-                val promoCode = "Fif"
-                navController.navigateToProductDetails(product.id)
-            },
-            onNavigateOrderClick = {
-                navController.navigate(highLightsRoute)
-            }
+            onNavigateProductClick = onNavigateToProductDetails,
+            onOrderClick = onNavigateToCheckout,
         )
     }
 }

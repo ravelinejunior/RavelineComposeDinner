@@ -29,7 +29,7 @@ fun MenuListScreen(
     modifier: Modifier = Modifier,
     title: String = "Menu",
     uiState: MenuListUiState = MenuListUiState(),
-    onNavigateToDetails: (ProductModel) -> Unit = {}
+    onProductClick: (ProductModel) -> Unit = {}
 ) {
 
     val productModels = uiState.products
@@ -57,7 +57,7 @@ fun MenuListScreen(
                 MenuProductCard(
                     productModel = p,
                     modifier = Modifier.clickable {
-                        onNavigateToDetails(p)
+                        onProductClick(p)
                     }
                 )
             }
@@ -71,7 +71,8 @@ fun MenuListScreenPreview() {
     RavelineTheme {
         Surface {
             MenuListScreen(
-                uiState = MenuListUiState(products = sampleProducts)
+                uiState = MenuListUiState(products = sampleProducts),
+                onProductClick = {}
             )
         }
     }

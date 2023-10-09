@@ -6,6 +6,8 @@ import androidx.navigation.compose.NavHost
 import br.com.alura.raveline.navigation.checkoutScreen
 import br.com.alura.raveline.navigation.graph.homeGraph
 import br.com.alura.raveline.navigation.graph.homeGraphRoute
+import br.com.alura.raveline.navigation.navigateToCheckout
+import br.com.alura.raveline.navigation.navigateToProductDetails
 import br.com.alura.raveline.navigation.productDetailsScreen
 
 const val TAG: String = "RavelineNavHost"
@@ -18,9 +20,28 @@ fun RavelineNavHost(
         navController = navController,
         startDestination = homeGraphRoute,
     ) {
-        homeGraph(navController)
-        productDetailsScreen(navController)
-        checkoutScreen(navController)
+        homeGraph(
+            onNavigateToCheckout = {
+                navController.navigateToCheckout()
+            },
+            onNavigateToProductDetails = { product ->
+                val promoCode = "Coit"
+                navController.navigateToProductDetails(product.id, promoCode)
+            }
+        )
+        productDetailsScreen(
+            onNavigateToCheckout = {
+                navController.navigateToCheckout()
+            },
+            onPopBackStack = {
+                navController.navigateUp()
+            }
+        )
+        checkoutScreen(
+            onPopBackStack = {
+                navController.navigateUp()
+            }
+        )
     }
 }
 

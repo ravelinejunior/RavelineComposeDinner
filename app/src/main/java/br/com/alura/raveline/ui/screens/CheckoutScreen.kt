@@ -45,7 +45,7 @@ import br.com.alura.raveline.ui.uistate.CheckoutUiState
 fun CheckoutScreen(
     modifier: Modifier = Modifier,
     uiState: CheckoutUiState = CheckoutUiState(),
-    onPopBackStack: () -> Unit = {}
+    onOrderClick: () -> Unit = {},
 ) {
     val productModels = uiState.products
     Box(
@@ -149,7 +149,7 @@ fun CheckoutScreen(
         }
         Button(
             onClick = {
-                onPopBackStack()
+                onOrderClick()
             },
             Modifier
                 .padding(
@@ -180,7 +180,8 @@ fun CheckoutScreenPreview() {
     RavelineTheme {
         Surface {
             CheckoutScreen(
-                uiState = CheckoutUiState(products = sampleProducts)
+                uiState = CheckoutUiState(products = sampleProducts),
+                onOrderClick = {}
             )
         }
     }
@@ -191,7 +192,7 @@ fun CheckoutScreenPreview() {
 fun CheckoutScreenWithoutProductsPreview() {
     RavelineTheme {
         Surface {
-            CheckoutScreen()
+            CheckoutScreen(onOrderClick = {})
         }
     }
 }
