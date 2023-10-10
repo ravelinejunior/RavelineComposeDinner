@@ -9,6 +9,7 @@ import br.com.alura.raveline.navigation.graph.homeGraphRoute
 import br.com.alura.raveline.navigation.navigateToCheckout
 import br.com.alura.raveline.navigation.navigateToProductDetails
 import br.com.alura.raveline.navigation.productDetailsScreen
+import br.com.alura.raveline.utils.orderDoneKey
 
 const val TAG: String = "RavelineNavHost"
 
@@ -39,6 +40,9 @@ fun RavelineNavHost(
         )
         checkoutScreen(
             onPopBackStack = {
+                navController.currentBackStackEntry
+                    ?.savedStateHandle
+                    ?.set(orderDoneKey, "Order successfully requested")
                 navController.navigateUp()
             }
         )

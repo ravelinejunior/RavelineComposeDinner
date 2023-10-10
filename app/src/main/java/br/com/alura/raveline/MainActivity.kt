@@ -31,6 +31,7 @@ import br.com.alura.raveline.navigation.productDetailsRoute
 import br.com.alura.raveline.ui.components.RavelineBottomAppBar
 import br.com.alura.raveline.ui.screens.*
 import br.com.alura.raveline.ui.theme.RavelineTheme
+import br.com.alura.raveline.utils.orderDoneKey
 
 class MainActivity : ComponentActivity() {
 
@@ -49,6 +50,17 @@ class MainActivity : ComponentActivity() {
                     Log.i("MainActivityTAG", "onCreate: back stack - $routes")
                 }
             }
+
+            //Saved state
+            val backStackEntryState by navController.currentBackStackEntryAsState()
+            val orderMessageDone = backStackEntryState
+                ?.savedStateHandle
+                ?.getStateFlow<String?>(orderDoneKey, null)
+                ?.collectAsState()
+
+            Log.i(TAG, "Order done message: ${orderMessageDone?.value}")
+
+
             RavelineTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -114,8 +126,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-
-
 
 
 }
