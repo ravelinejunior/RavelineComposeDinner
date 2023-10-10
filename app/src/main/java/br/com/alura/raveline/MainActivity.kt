@@ -9,6 +9,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PointOfSale
@@ -17,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import br.com.alura.raveline.navigation.BottomAppBarItem
@@ -32,6 +34,7 @@ import br.com.alura.raveline.ui.components.RavelineBottomAppBar
 import br.com.alura.raveline.ui.screens.*
 import br.com.alura.raveline.ui.theme.RavelineTheme
 import br.com.alura.raveline.utils.orderDoneKey
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -53,13 +56,23 @@ class MainActivity : ComponentActivity() {
 
             //Saved state
             val backStackEntryState by navController.currentBackStackEntryAsState()
+            val snackBarHostState = remember {
+                SnackbarHostState()
+            }
+            val scope = rememberCoroutineScope()
+
             val orderMessageDone = backStackEntryState
                 ?.savedStateHandle
                 ?.getStateFlow<String?>(orderDoneKey, null)
                 ?.collectAsState()
 
-            Log.i(TAG, "Order done message: ${orderMessageDone?.value}")
+            orderMessageDone?.value?.let { message ->
+                scope.launch {
+                    snackBarHostState.showSnackbar(message = message)
+                }
+            }
 
+            Log.i(TAG, "Order done message: ${orderMessageDone?.value}")
 
             RavelineTheme {
                 Surface(
@@ -67,7 +80,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
 
-                    val backStackEntryState by navController.currentBackStackEntryAsState()
                     val currentDestination = backStackEntryState?.destination
                     val currentRoute = currentDestination?.route
 
@@ -118,7 +130,8 @@ class MainActivity : ComponentActivity() {
                         isProductDetailSelected = isProductSelected,
                         onNavigateBack = {
                             navController.navigateUp()
-                        }
+                        },
+                        snackBarHostState = snackBarHostState,
                     ) {
                         RavelineNavHost(navController = navController)
                     }
@@ -141,9 +154,24 @@ fun RavelineApp(
     isShowFab: Boolean = false,
     isProductDetailSelected: Boolean = false,
     onNavigateBack: () -> Unit = {},
+    snackBarHostState: SnackbarHostState = SnackbarHostState(),
     content: @Composable () -> Unit,
 ) {
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackBarHostState) { snackData ->
+                Snackbar(
+                    modifier = Modifier
+                        .padding(12.dp)
+                        .statusBarsPadding()
+                ) {
+                    Text(
+                        text = snackData.visuals.message,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+        },
         topBar = {
             if (isShowTopBar) {
                 CenterAlignedTopAppBar(
@@ -205,7 +233,7 @@ fun RavelineApp(
 private fun RavelineAppPreview() {
     RavelineTheme {
         Surface {
-            RavelineApp {}
+            RavelineApp(content = {})
         }
     }
 }

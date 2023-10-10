@@ -42,7 +42,7 @@ fun RavelineNavHost(
             onPopBackStack = {
                 navController.currentBackStackEntry
                     ?.savedStateHandle
-                    ?.set(orderDoneKey, "Order successfully requested")
+                    ?.set(orderDoneKey, " ✅ Order successfully requested")
                 navController.navigateUp()
             }
         )
