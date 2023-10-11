@@ -7,16 +7,23 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptions
 import androidx.navigation.compose.composable
+import androidx.navigation.navDeepLink
 import br.com.alura.raveline.model.ProductModel
 import br.com.alura.raveline.ui.screens.DrinksListScreen
 import br.com.alura.raveline.ui.viewmodel.DrinksListViewModel
 
 const val drinksRoute = "Drinks"
+const val drinksUri = "https://thechive.com/sexy-girls/"
 
 fun NavGraphBuilder.drinksListScreen(
     onNavigateToProductDetails: (ProductModel) -> Unit
 ) {
-    composable(drinksRoute) {
+    composable(
+        drinksRoute,
+        deepLinks = listOf(navDeepLink {
+            uriPattern = drinksUri
+        })
+    ) {
         val viewModel: DrinksListViewModel = viewModel()
         val uiState by viewModel.uiState.collectAsState()
         DrinksListScreen(
