@@ -6,14 +6,13 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import br.com.alura.raveline.ui.screens.ProductDetailsScreen
 import br.com.alura.raveline.ui.viewmodel.ProductDetailsViewModel
 import java.math.BigDecimal
 
-private const val productIdArgument = "productId"
+internal const val productIdArgument = "productId"
 internal const val promoCodeArgument = "promoCode"
 const val productDetailsRoute = "ProductDetails"
 
@@ -29,14 +28,16 @@ fun NavGraphBuilder.productDetailsScreen(
         })
     ) { backStackEntry ->
 
-        val viewModel: ProductDetailsViewModel = viewModel()
+        val viewModel: ProductDetailsViewModel = viewModel(
+            factory = ProductDetailsViewModel.ProductDetailsViewModelFactory
+        )
         val uiState by viewModel.uiState.collectAsState()
 
         backStackEntry.arguments?.getString(productIdArgument)?.let { id ->
 
-            LaunchedEffect(Unit) {
+            /*LaunchedEffect(Unit) {
                 viewModel.findProductById(id)
-            }
+            }*/
 
             //Discount Product
             val promoCode = backStackEntry.arguments?.getString(promoCodeParam)
