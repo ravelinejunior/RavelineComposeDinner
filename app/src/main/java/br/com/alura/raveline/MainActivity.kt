@@ -19,16 +19,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import br.com.alura.raveline.navigation.BottomAppBarItem
-import br.com.alura.raveline.navigation.nav_host.RavelineNavHost
 import br.com.alura.raveline.navigation.bottomAppBarItems
 import br.com.alura.raveline.navigation.checkoutRoute
 import br.com.alura.raveline.navigation.drinksRoute
 import br.com.alura.raveline.navigation.graph.navigateSingleTopWithPopUpTo
 import br.com.alura.raveline.navigation.highLightsRoute
 import br.com.alura.raveline.navigation.menuRoute
+import br.com.alura.raveline.navigation.nav_host.RavelineNavHost
+import br.com.alura.raveline.navigation.nav_host.TAG
 import br.com.alura.raveline.navigation.productDetailsRoute
 import br.com.alura.raveline.ui.components.RavelineBottomAppBar
 import br.com.alura.raveline.ui.screens.*
@@ -43,104 +45,112 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val navController = rememberNavController()
-            // See the change in navigation
-            LaunchedEffect(Unit) {
-                navController.addOnDestinationChangedListener { _, _, _ ->
-                    val routes = navController.backQueue.map {
-                        it.destination.route
-                    }
-                    Log.i("MainActivityTAG", "onCreate: back stack - $routes")
-                }
-            }
 
-            //Saved state
-            val backStackEntryState by navController.currentBackStackEntryAsState()
-            val snackBarHostState = remember {
-                SnackbarHostState()
-            }
-            val scope = rememberCoroutineScope()
-
-            val orderMessageDone = backStackEntryState
-                ?.savedStateHandle
-                ?.getStateFlow<String?>(orderDoneKey, null)
-                ?.collectAsState()
-
-            orderMessageDone?.value?.let { message ->
-                scope.launch {
-                    snackBarHostState.showSnackbar(message = message)
-                }
-            }
-
-            Log.i(TAG, "Order done message: ${orderMessageDone?.value}")
 
             RavelineTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
-                    val currentDestination = backStackEntryState?.destination
-                    val currentRoute = currentDestination?.route
-
-                    val selectedItem by remember(currentDestination) {
-
-                        val item = when (currentRoute) {
-                            highLightsRoute -> BottomAppBarItem.HighlightListItemBar
-                            menuRoute -> BottomAppBarItem.MenuItemBar
-                            drinksRoute -> BottomAppBarItem.DrinksItemBar
-                            else -> BottomAppBarItem.HighlightListItemBar
-                        }
-
-                        mutableStateOf(item)
-                    }
-
-                    //Verify if bottom app bar has items
-                    val containsInBottomAppBarItems = when (currentRoute) {
-                        highLightsRoute, menuRoute, drinksRoute -> true
-                        else -> false
-                    }
-
-                    val isShowFab = when (currentDestination?.route) {
-                        menuRoute,
-                        drinksRoute -> true
-
-                        else -> false
-                    }
-
-                    val isProductSelected = currentDestination?.let {
-                        it.route?.contains(
-                            productDetailsRoute,
-                            ignoreCase = true
-                        )
-                    } ?: false
-
-                    RavelineApp(
-                        bottomAppBarItemSelected = selectedItem,
-                        onBottomAppBarItemSelectedChange = { item ->
-                            navController.navigateSingleTopWithPopUpTo(item)
-                        },
-                        onFabClick = {
-                            //Navigate to checkout
-                            navController.navigate(checkoutRoute)
-                        },
-                        isShowBottomBar = containsInBottomAppBarItems,
-                        isShowTopBar = containsInBottomAppBarItems,
-                        isShowFab = isShowFab,
-                        isProductDetailSelected = isProductSelected,
-                        onNavigateBack = {
-                            navController.navigateUp()
-                        },
-                        snackBarHostState = snackBarHostState,
-                    ) {
-                        RavelineNavHost(navController = navController)
-                    }
+                    RavelineApp()
                 }
             }
         }
     }
 
 
+}
+
+@Composable
+fun RavelineApp(
+    navController: NavHostController = rememberNavController()
+) {
+    // See the change in navigation
+    LaunchedEffect(Unit) {
+        navController.addOnDestinationChangedListener { _, _, _ ->
+            val routes = navController.backQueue.map {
+                it.destination.route
+            }
+            Log.i("MainActivityTAG", "onCreate: back stack - $routes")
+        }
+    }
+
+    //Saved state
+    val backStackEntryState by navController.currentBackStackEntryAsState()
+    val snackBarHostState = remember {
+        SnackbarHostState()
+    }
+    val scope = rememberCoroutineScope()
+
+    val orderMessageDone = backStackEntryState
+        ?.savedStateHandle
+        ?.getStateFlow<String?>(orderDoneKey, null)
+        ?.collectAsState()
+
+    orderMessageDone?.value?.let { message ->
+        scope.launch {
+            snackBarHostState.showSnackbar(message = message)
+        }
+    }
+
+    Log.i(TAG, "Order done message: ${orderMessageDone?.value}")
+
+
+    val currentDestination = backStackEntryState?.destination
+    val currentRoute = currentDestination?.route
+
+    val selectedItem by remember(currentDestination) {
+
+        val item = when (currentRoute) {
+            highLightsRoute -> BottomAppBarItem.HighlightListItemBar
+            menuRoute -> BottomAppBarItem.MenuItemBar
+            drinksRoute -> BottomAppBarItem.DrinksItemBar
+            else -> BottomAppBarItem.HighlightListItemBar
+        }
+
+        mutableStateOf(item)
+    }
+
+    //Verify if bottom app bar has items
+    val containsInBottomAppBarItems = when (currentRoute) {
+        highLightsRoute, menuRoute, drinksRoute -> true
+        else -> false
+    }
+
+    val isShowFab = when (currentDestination?.route) {
+        menuRoute,
+        drinksRoute -> true
+
+        else -> false
+    }
+
+    val isProductSelected = currentDestination?.let {
+        it.route?.contains(
+            productDetailsRoute,
+            ignoreCase = true
+        )
+    } ?: false
+
+    RavelineApp(
+        bottomAppBarItemSelected = selectedItem,
+        onBottomAppBarItemSelectedChange = { item ->
+            navController.navigateSingleTopWithPopUpTo(item)
+        },
+        onFabClick = {
+            //Navigate to checkout
+            navController.navigate(checkoutRoute)
+        },
+        isShowBottomBar = containsInBottomAppBarItems,
+        isShowTopBar = containsInBottomAppBarItems,
+        isShowFab = isShowFab,
+        isProductDetailSelected = isProductSelected,
+        onNavigateBack = {
+            navController.navigateUp()
+        },
+        snackBarHostState = snackBarHostState,
+    ) {
+        RavelineNavHost(navController = navController)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
