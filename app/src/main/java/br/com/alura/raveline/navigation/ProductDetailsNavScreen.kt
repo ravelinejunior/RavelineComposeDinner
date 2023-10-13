@@ -8,6 +8,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
+import br.com.alura.raveline.navigation.nav_host.genUri
 import br.com.alura.raveline.ui.screens.ProductDetailsScreen
 import br.com.alura.raveline.ui.viewmodel.ProductDetailsViewModel
 import java.math.BigDecimal
@@ -25,7 +27,12 @@ fun NavGraphBuilder.productDetailsScreen(
         "$productDetailsRoute/{$productIdArgument}?$promoCodeArgument={$promoCodeParam}",
         arguments = listOf(navArgument(promoCodeParam) {
             nullable = true
-        })
+        }),
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = "$genUri/$productDetailsRoute/{$productIdArgument}?$promoCodeArgument={$promoCodeParam}"
+            }
+        )
     ) { backStackEntry ->
 
         val viewModel: ProductDetailsViewModel = viewModel(

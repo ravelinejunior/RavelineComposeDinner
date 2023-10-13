@@ -139,6 +139,7 @@ val sampleDrinks = listOf(
 
 val sampleProducts: List<ProductModel> = listOf(
     ProductModel(
+        id = "54321",
         name = "Hamburguer",
         price = BigDecimal("12.99"),
         image = "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg",

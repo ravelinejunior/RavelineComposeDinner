@@ -12,6 +12,7 @@ import br.com.alura.raveline.navigation.productDetailsScreen
 import br.com.alura.raveline.utils.orderDoneKey
 
 const val TAG: String = "RavelineNavHost"
+internal const val genUri = "https://www.thechive.com/category/sexy-girls/"
 
 @Composable
 fun RavelineNavHost(
