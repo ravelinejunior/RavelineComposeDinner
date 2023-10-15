@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import br.com.alura.raveline.ui.screens.CheckoutScreen
 import br.com.alura.raveline.ui.viewmodel.CheckoutViewModel
 
-const val checkoutRoute = "Checkout"
+internal val checkoutRoute = "Checkout"
 
 fun NavGraphBuilder.checkoutScreen(
     onPopBackStack: () -> Unit

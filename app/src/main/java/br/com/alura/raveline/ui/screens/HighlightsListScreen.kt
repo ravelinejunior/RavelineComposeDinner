@@ -13,11 +13,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import br.com.alura.raveline.model.ProductModel
+import br.com.alura.raveline.navigation.highLightsRoute
 import br.com.alura.raveline.sampledata.sampleProducts
 import br.com.alura.raveline.ui.components.HighlightProductCard
 import br.com.alura.raveline.ui.theme.RavelineTheme
@@ -59,7 +62,11 @@ fun HighlightsListScreen(
             items(productModels) { p ->
                 HighlightProductCard(
                     productModel = p,
-                    Modifier.clickable {
+                    Modifier
+                        .semantics {
+                            contentDescription = "Highlights Products Card Item"
+                        }
+                        .clickable {
                         onNavigateProductClick(p)
                     },
                     onOrderClick = {

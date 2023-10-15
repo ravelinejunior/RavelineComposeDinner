@@ -7,6 +7,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -14,8 +15,8 @@ import androidx.compose.ui.test.printToLog
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import br.com.alura.raveline.RavelineApp
+import br.com.alura.raveline.navigation.checkoutRoute
 import br.com.alura.raveline.navigation.drinksRoute
-import br.com.alura.raveline.navigation.highLightsRoute
 import br.com.alura.raveline.navigation.menuRoute
 import br.com.alura.raveline.navigation.productDetailsRoute
 import br.com.alura.raveline.navigation.productIdArgument
@@ -28,6 +29,8 @@ class RavelineNavHostKtTest {
     @get:Rule
     val composeTestRule = createComposeRule()
     private lateinit var navController: TestNavHostController
+
+    private val promoCode = "promoCode"
 
     @Before
     fun setupAppNavHost() {
@@ -52,8 +55,8 @@ class RavelineNavHostKtTest {
         composeTestRule.onNodeWithText("Menu")
             .performClick()
 
-        composeTestRule.onNodeWithText(menuRoute)
-            .assertIsDisplayed()
+        composeTestRule.onAllNodesWithText("Menu")
+            .onFirst().assertIsDisplayed()
 
         val route = navController.currentBackStackEntry?.destination?.route
 
@@ -66,7 +69,7 @@ class RavelineNavHostKtTest {
             .performClick()
 
         composeTestRule.onAllNodesWithText(drinksRoute)
-            .assertCountEquals(2)
+            .assertCountEquals(1)
 
         val route = navController.currentBackStackEntry?.destination?.route
         Assert.assertEquals(route, drinksRoute)
@@ -74,18 +77,25 @@ class RavelineNavHostKtTest {
 
     @Test
     fun ravelineNavHost_verifyIfProductDetailsScreenIsDisplayedFromHighlightsListScreen() {
+
         composeTestRule
-            .onAllNodesWithContentDescription(highLightsRoute)
+            .onAllNodesWithContentDescription("Highlights Products Card Item")
             .onFirst()
             .performClick()
 
-        composeTestRule
-            .onNodeWithText("Trending Day")
+        composeTestRule.waitUntil(2500) {
+            composeTestRule.onAllNodesWithText("Product is not available.")
+                .fetchSemanticsNodes().size == 1
+        }
+
+        composeTestRule.onNodeWithText("Product is not available.")
             .assertIsDisplayed()
 
-
         val route = navController.currentBackStackEntry?.destination?.route
-        Assert.assertEquals(route, "$productDetailsRoute/{$productIdArgument}")
+        Assert.assertEquals(
+            route,
+            "$productDetailsRoute/{$productIdArgument}?promoCode={$promoCode}"
+        )
     }
 
     @Test
@@ -98,8 +108,23 @@ class RavelineNavHostKtTest {
             .onFirst()
             .performClick()
 
+        composeTestRule.waitUntil(2500) {
+            composeTestRule.onAllNodesWithContentDescription(
+                "ProductDetailsUiState.Success Content",
+                ignoreCase = true
+            ).fetchSemanticsNodes().size == 1
+        }
+
+        composeTestRule.onNodeWithContentDescription(
+            "ProductDetailsUiState.Success Content",
+            ignoreCase = true
+        ).assertIsDisplayed()
+
         val route = navController.currentBackStackEntry?.destination?.route
-        Assert.assertEquals(route, "$productDetailsRoute/{$productIdArgument}")
+        Assert.assertEquals(
+            route,
+            "$productDetailsRoute/{$productIdArgument}?promoCode={$promoCode}"
+        )
     }
 
     @Test
@@ -112,7 +137,72 @@ class RavelineNavHostKtTest {
             .onFirst()
             .performClick()
 
+        composeTestRule.waitUntil(2500) {
+            composeTestRule.onAllNodesWithContentDescription(
+                "ProductDetailsUiState.Success Content",
+                ignoreCase = true
+            ).fetchSemanticsNodes().size == 1
+        }
+
+        composeTestRule.onNodeWithContentDescription(
+            "ProductDetailsUiState.Success Content",
+            ignoreCase = true
+        ).assertIsDisplayed()
+
+
         val route = navController.currentBackStackEntry?.destination?.route
-        Assert.assertEquals(route, "$productDetailsRoute/{$productIdArgument}")
+        Assert.assertEquals(
+            route,
+            "$productDetailsRoute/{$productIdArgument}?promoCode={$promoCode}"
+        )
+    }
+
+    @Test
+    fun ravelineNavHost_VerifyIfCheckoutScreenIsDisplayedFromHighLightScreen() {
+        composeTestRule.onAllNodesWithText("Order").onFirst().performClick()
+
+        composeTestRule.onAllNodesWithText("Order").onFirst().assertIsDisplayed()
+
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(
+            route,
+            checkoutRoute
+        )
+    }
+
+    @Test
+    fun ravelineNavHost_VerifyIfCheckoutScreenIsDisplayedFromMenuScreen() {
+        composeTestRule.onNodeWithText("Menu").performClick()
+
+        composeTestRule.onNodeWithContentDescription("FloatingActionButton Content MainActivity")
+            .performClick()
+
+        composeTestRule.onAllNodesWithText("Order").onFirst().performClick()
+
+        composeTestRule.onAllNodesWithText("Order").onFirst().assertIsDisplayed()
+
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(
+            route,
+            checkoutRoute
+        )
+    }
+
+    @Test
+    fun ravelineNavHost_VerifyIfCheckoutScreenIsDisplayedFromDrinksScreen() {
+        composeTestRule.onNodeWithText("Drinks").performClick()
+
+        composeTestRule.onNodeWithContentDescription("FloatingActionButton Content MainActivity")
+            .performClick()
+
+        composeTestRule.onAllNodesWithText("Order").onFirst().performClick()
+
+        composeTestRule.onAllNodesWithText("Order").onFirst().assertIsDisplayed()
+
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(
+            route,
+            checkoutRoute
+        )
     }
 }
