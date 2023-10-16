@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -225,10 +226,10 @@ class RavelineNavHostKtTest {
                 .fetchSemanticsNodes().size == 1
         }
 
-        composeTestRule.onNodeWithText("Order") //fix
+        composeTestRule.onAllNodesWithText("Order").onLast() //fix
             .performClick()
 
-        composeTestRule.onNodeWithText("Order")
+        composeTestRule.onAllNodesWithText("Order").onFirst()
             .assertIsDisplayed()
 
         val route = navController.currentBackStackEntry?.destination?.route
@@ -245,7 +246,7 @@ class RavelineNavHostKtTest {
             navController.navigateToCheckout()
         }
 
-        composeTestRule.onNodeWithText("Order").performClick()
+        composeTestRule.onAllNodesWithText("Order").onLast().performClick()
 
         composeTestRule.onNodeWithTag("RavelineSnackBar")
             .assertIsDisplayed()
