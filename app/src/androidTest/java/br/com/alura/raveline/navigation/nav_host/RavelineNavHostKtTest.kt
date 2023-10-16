@@ -3,11 +3,13 @@ package br.com.alura.raveline.navigation.nav_host
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
@@ -18,8 +20,14 @@ import br.com.alura.raveline.RavelineApp
 import br.com.alura.raveline.navigation.checkoutRoute
 import br.com.alura.raveline.navigation.drinksRoute
 import br.com.alura.raveline.navigation.menuRoute
+import br.com.alura.raveline.navigation.navigateMenuList
+import br.com.alura.raveline.navigation.navigateToCheckout
+import br.com.alura.raveline.navigation.navigateToDrinksList
+import br.com.alura.raveline.navigation.navigateToHighlightList
+import br.com.alura.raveline.navigation.navigateToProductDetails
 import br.com.alura.raveline.navigation.productDetailsRoute
 import br.com.alura.raveline.navigation.productIdArgument
+import br.com.alura.raveline.sampledata.sampleProducts
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
@@ -205,4 +213,158 @@ class RavelineNavHostKtTest {
             checkoutRoute
         )
     }
+
+    @Test
+    fun ravelineNavHost_VerifyIfCheckoutScreenIsDisplayedFromProductDetailsScreen() {
+        composeTestRule.runOnUiThread {
+            navController.navigateToProductDetails(sampleProducts.first().id, promoCode = promoCode)
+        }
+
+        composeTestRule.waitUntil(2500) {
+            composeTestRule.onAllNodesWithText("Order")
+                .fetchSemanticsNodes().size == 1
+        }
+
+        composeTestRule.onNodeWithText("Order") //fix
+            .performClick()
+
+        composeTestRule.onNodeWithText("Order")
+            .assertIsDisplayed()
+
+        val route = navController.currentBackStackEntry?.destination?.route
+        Assert.assertEquals(
+            route,
+            checkoutRoute
+        )
+    }
+
+    @Test
+    fun ravelineNavHost_verifyIfSnackBarIsDisplayedWhenFinishTheOrder() {
+
+        composeTestRule.runOnUiThread {
+            navController.navigateToCheckout()
+        }
+
+        composeTestRule.onNodeWithText("Order").performClick()
+
+        composeTestRule.onNodeWithTag("RavelineSnackBar")
+            .assertIsDisplayed()
+
+    }
+
+    @Test
+    fun ravelineNavHost_verifyIfBottomAppBarIsDisplayedOnlyInHomeGraphNavigation() {
+        val bottomAppBarTag = "RavelineBottomAppBar"
+
+        composeTestRule.runOnUiThread {
+            navController.navigateToHighlightList()
+        }
+        composeTestRule.onNodeWithTag(bottomAppBarTag)
+            .assertIsDisplayed()
+
+        composeTestRule.runOnUiThread {
+            navController.navigateMenuList()
+        }
+        composeTestRule.onNodeWithTag(bottomAppBarTag)
+            .assertIsDisplayed()
+
+        composeTestRule.runOnUiThread {
+            navController.navigateToDrinksList()
+        }
+        composeTestRule.onNodeWithTag(bottomAppBarTag)
+            .assertIsDisplayed()
+
+        composeTestRule.runOnUiThread {
+            navController.navigateToProductDetails(sampleProducts.random().id)
+        }
+        composeTestRule.onNodeWithTag(bottomAppBarTag)
+            .assertDoesNotExist()
+
+        composeTestRule.runOnUiThread {
+            navController.navigateToCheckout()
+        }
+        composeTestRule.onNodeWithTag(bottomAppBarTag)
+            .assertDoesNotExist()
+    }
+
+    @Test
+    fun appNavHost_verifyIfFabIsDisplayedOnlyInMenuOrDrinksDestination() {
+
+        val fabContentDescription = "FloatingActionButton Content MainActivity"
+
+        val assertThatFabIsDisplayed = fun ComposeTestRule.() {
+            onNodeWithContentDescription(fabContentDescription)
+                .assertIsDisplayed()
+        }
+        composeTestRule.runOnUiThread {
+            navController.navigateMenuList()
+        }
+        composeTestRule.assertThatFabIsDisplayed()
+
+        composeTestRule.runOnUiThread {
+            navController.navigateToDrinksList()
+        }
+        composeTestRule.assertThatFabIsDisplayed()
+
+        val assertThatFabDoesNotExist = fun ComposeTestRule.() {
+            onNodeWithContentDescription(fabContentDescription)
+                .assertDoesNotExist()
+        }
+        composeTestRule.runOnUiThread {
+            navController.navigateToHighlightList()
+        }
+        composeTestRule.assertThatFabDoesNotExist()
+
+        composeTestRule.runOnUiThread {
+            navController.navigateToProductDetails(sampleProducts.random().id)
+        }
+        composeTestRule.assertThatFabDoesNotExist()
+
+        composeTestRule.runOnUiThread {
+            navController.navigateToCheckout()
+        }
+        composeTestRule.assertThatFabDoesNotExist()
+    }
+
+    /* Nessa versão já aplico as técnicas para simplificar o código mesmo sendo grande */
+    @Test
+    fun appNavHost_verifyIfTopAppBarIsDisplayedOnlyInHomeGraphNavigation() =
+        with(composeTestRule) {
+            val topAppBarTag = "RavelineTopAppBar"
+
+            val assertThatTopAppBarIsDisplayed = fun ComposeTestRule.() {
+                onNodeWithTag(topAppBarTag)
+                    .assertIsDisplayed()
+            }
+
+            runOnUiThread {
+                navController.navigateToHighlightList()
+            }
+            assertThatTopAppBarIsDisplayed()
+
+            runOnUiThread {
+                navController.navigateMenuList()
+            }
+            assertThatTopAppBarIsDisplayed()
+
+            runOnUiThread {
+                navController.navigateToDrinksList()
+            }
+            assertThatTopAppBarIsDisplayed()
+
+            val assertThatTopAppBarDoesNotExist = fun ComposeTestRule.() {
+                onNodeWithTag(topAppBarTag)
+                    .assertDoesNotExist()
+            }
+            runOnUiThread {
+                navController.navigateToProductDetails(sampleProducts.random().id)
+            }
+            assertThatTopAppBarDoesNotExist()
+
+            runOnUiThread {
+                navController.navigateToCheckout()
+            }
+            assertThatTopAppBarDoesNotExist()
+        }
+
 }

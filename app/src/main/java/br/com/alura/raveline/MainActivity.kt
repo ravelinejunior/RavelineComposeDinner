@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -176,6 +177,9 @@ fun RavelineApp(
                     modifier = Modifier
                         .padding(12.dp)
                         .statusBarsPadding()
+                        .semantics {
+                            testTag = "RavelineSnackBar"
+                        }
                 ) {
                     Text(
                         text = snackData.visuals.message,
@@ -190,6 +194,9 @@ fun RavelineApp(
                     title = {
                         Text(text = "Ristorante Raveline")
                     },
+                    modifier = Modifier.semantics {
+                        testTag = "RavelineTopAppBar"
+                    }
                 )
             }
             if (isProductDetailSelected) {
@@ -216,6 +223,9 @@ fun RavelineApp(
                     item = bottomAppBarItemSelected,
                     items = bottomAppBarItems,
                     onItemChange = onBottomAppBarItemSelectedChange,
+                    modifier = Modifier.semantics {
+                        testTag = "RavelineBottomAppBar"
+                    }
                 )
             }
         },

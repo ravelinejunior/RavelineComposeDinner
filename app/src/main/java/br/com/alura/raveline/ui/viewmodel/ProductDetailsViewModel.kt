@@ -1,8 +1,10 @@
 package br.com.alura.raveline.ui.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
@@ -75,6 +77,7 @@ class ProductDetailsViewModel(
     companion object {
         val ProductDetailsViewModelFactory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
+                val context = this[APPLICATION_KEY] as Context
                 ProductDetailsViewModel(
                     dao = ProductDao(),
                     savedStateHandle = createSavedStateHandle()
